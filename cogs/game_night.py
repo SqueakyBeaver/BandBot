@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from utilities import Utilities
 
-
 class GameNightCommands(commands.Cog):
     """Game Night Commands"""
 
@@ -21,8 +20,11 @@ class GameNightCommands(commands.Cog):
 
         suggestionAuthor = f'{ctx.author.name}#{ctx.author.discriminator}'
 
-        await suggestionChannel.send(
+        reactionTo = await suggestionChannel.send(
             f"{ctx.message.author.id} (**{suggestionAuthor}**) suggested at {ctx.message.created_at}:```css\n{' '.join(args)}``` ")
+        await reactionTo.add_reaction('👍')
+        await reactionTo.add_reaction('👎')
+
         await ctx.message.delete()
 
     @commands.command(name="choosegame",
@@ -60,6 +62,10 @@ class GameNightCommands(commands.Cog):
                         f"Congratulations! Your suggestion {await Utilities.get_content(ctx, self, messageID)} was accepted!")
 
                 await announcementChannel.send(f"{pingRole.mention}\nWe will play {await Utilities.get_content(ctx, self, messageID)}")
+
+                message = await ctx.fetch_message(messageID)
+                await message.delete()
+
             except:
                 await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
                 return
@@ -81,6 +87,8 @@ class GameNightCommands(commands.Cog):
                       description='Leave the game night role')
     @commands.has_role(779749274773749870)
     async def leave_game_night(self, ctx):
+        if (ctx.channel.id == 779541142818521108):
+            await ctx.message.delete()
         try:
             await ctx.author.remove_roles(discord.Object(779749274773749870), reason="Doesn't like ping, I guess")
             await ctx.send("Success")
