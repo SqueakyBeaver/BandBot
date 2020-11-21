@@ -3,13 +3,12 @@ from keep_alive import keep_alive
 from discord.ext import commands
 import discord
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
 bot = commands.Bot(
     command_prefix="b!",  # Change to desired prefix
     case_insensitive=True,  # Commands aren't case-sensitive
-    intents = intents # Discord has to be annoying
+    intents=intents  # Discord has to be annoying
 )
 
 bot.author_id = 557273716782923820  # Change to your discord id!!!
@@ -23,8 +22,8 @@ async def on_ready():  # When the bot is ready
 
 extensions = [
     "cogs.devs",  # Commands for devs only
-    "cogs.game_night"  # Commands for game nights
-    "cogs.general" # General commands
+    "cogs.game_night",  # Commands for game nights
+    "cogs.general"  # General commands
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
