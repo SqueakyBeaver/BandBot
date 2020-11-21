@@ -5,7 +5,7 @@ import discord
 
 bot = commands.Bot(
     command_prefix="b!",  # Change to desired prefix
-    case_insensitive=True  # Commands aren't case-sensitive
+    case_insensitive=True,  # Commands aren't case-sensitive
 )
 
 bot.author_id = 557273716782923820  # Change to your discord id!!!
