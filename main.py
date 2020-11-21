@@ -24,6 +24,7 @@ async def on_ready():  # When the bot is ready
 extensions = [
     "cogs.devs",  # Commands for devs only
     "cogs.game_night"  # Commands for game nights
+    "cogs.general" # General commands
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
