@@ -41,7 +41,8 @@ class GameNightCommands(commands.Cog):
             announcementChannel = self.bot.get_channel(
                 637316663267819561)
         else:
-            acceptRole = ctx.guild.get_role(767859838654742568) #Remember to change this later
+            # Remember to change this later
+            acceptRole = ctx.guild.get_role(767859838654742568)
             pingRole = ctx.guild.get_role(779749274773749870)
             announcementChannel = self.bot.get_channel(
                 779541190252298270)
@@ -62,6 +63,29 @@ class GameNightCommands(commands.Cog):
             except:
                 await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
                 return
+
+    @commands.command(name='join',
+                      description="Join game night role and pings")
+    async def join_game_night(self, ctx):
+        if (ctx.guild.get_role(779749274773749870) in ctx.author.roles):
+            await ctx.send("Stop trying to break me")
+            return
+        else:
+            try:
+                await ctx.author.add_roles(discord.Object(779749274773749870), reason="This is a cool person")
+                await ctx.send("Success!")
+            except:
+                await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
+
+    @commands.command(name='leave',
+                      description='Leave the game night role')
+    @commands.has_role(779749274773749870)
+    async def leave_game_night(self, ctx):
+        try:
+            await ctx.author.remove_roles(discord.Object(779749274773749870), reason="Doesn't like ping, I guess")
+            await ctx.send("Success")
+        except:
+            await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
 
 
 def setup(bot):

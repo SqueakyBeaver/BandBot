@@ -25,8 +25,17 @@ class GeneralCommands(commands.Cog):
                       decription="Bulk delete messages"
                       )
     @commands.has_permissions(manage_messages=True)
-    async def mass_delete(ctx, self, amount):
+    async def mass_delete(self, ctx, amount=100):
         await ctx.channel.purge(limit=amount)
+
+    @commands.command(name='bug',
+              aliases=['report', 'bugreport', 'br'],
+              decription="Send a bug report")
+    async def bug(self, ctx, *args):
+        feedbackChannel = self.bot.get_channel(779738194097995806)
+        await feedbackChannel.send(f"**BUG REPORT**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
+        await ctx.message.delete()
+        await ctx.send("Thank you for that")
 
 
 def setup(bot):

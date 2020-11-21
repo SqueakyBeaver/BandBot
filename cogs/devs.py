@@ -10,18 +10,19 @@ class DevCommands(commands.Cog):
 
     async def cog_check(self, ctx):
         '''
-		The default check for this cog whenever a command is used. Returns True if the command is allowed.
-		'''
-        return ctx.author.id == self.bot.author_id
+                The default check for this cog whenever a command is used. Returns True if the command is allowed.
+                '''
+        return await self.bot.is_owner(ctx.author)
 
     @commands.command(  # Decorator to declare where a command is.
         name='reload',  # Name of the command, defaults to function name.
         aliases=['rl'],  # Aliases for the command.
         hidden=True)
+    @commands.check(cog_check)
     async def reload(self, ctx, cog):
         '''
-		Reloads a cog.
-		'''
+                Reloads a cog.
+                '''
         extensions = self.bot.extensions  # A list of the bot's cogs/extensions.
         if cog == 'all':  # Lets you reload all cogs at once
             for extension in extensions:
@@ -35,11 +36,14 @@ class DevCommands(commands.Cog):
         else:
             await ctx.send('Unknown Cog')  # If the cog isn't found/loaded.
 
-    @commands.command(name="unload", aliases=['ul'], hidden=True)
+    @commands.command(name="unload",
+                      aliases=['ul'],
+                      hidden=True)
+    @commands.check(cog_check)
     async def unload(self, ctx, cog):
         '''
-		Unload a cog.
-		'''
+                Unload a cog.
+                '''
         extensions = self.bot.extensions
         if cog not in extensions:
             await ctx.send("Cog is not loaded!")
@@ -47,11 +51,13 @@ class DevCommands(commands.Cog):
         self.bot.unload_extension(cog)
         await ctx.send(f"`{cog}` has successfully been unloaded.")
 
-    @commands.command(name="load", hidden=True)
+    @commands.command(name="load",
+                      hidden=True)
+    @commands.check(cog_check)
     async def load(self, ctx, cog):
         '''
-		Loads a cog.
-		'''
+                Loads a cog.
+                '''
         try:
 
             self.bot.load_extension(cog)
@@ -60,11 +66,14 @@ class DevCommands(commands.Cog):
         except commands.errors.ExtensionNotFound:
             await ctx.send(f"`{cog}` does not exist!")
 
-    @commands.command(name="listcogs", aliases=['lc'], hidden=True)
+    @commands.command(name="listcogs",
+                      aliases=['lc'],
+                      hidden=True)
+    @commands.check(cog_check)
     async def listcogs(self, ctx):
         '''
-		Returns a list of all enabled commands.
-		'''
+                Returns a list of all enabled commands.
+                '''
         base_string = "```css\n"  # Gives some styling to the list (on pc side)
         base_string += "\n".join([str(cog) for cog in self.bot.extensions])
         base_string += "\n```"
