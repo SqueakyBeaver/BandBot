@@ -8,11 +8,9 @@ intents = discord.Intents.all()
 bot = commands.Bot(
     command_prefix="b!",  # Change to desired prefix
     case_insensitive=True,  # Commands aren't case-sensitive
-    intents=intents  # Discord has to be annoying
+    intents=intents,  # Discord has to be annoying
+    owner_id=557273716782923820 # I own the bot
 )
-
-bot.author_id = 557273716782923820  # Change to your discord id!!!
-
 
 @bot.event
 async def on_ready():  # When the bot is ready
