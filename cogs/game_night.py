@@ -1,12 +1,15 @@
 import discord
 from discord.ext import commands
 from utilities import Utilities
+from suggestion_data import DBClient
+
 
 class GameNightCommands(commands.Cog):
     """Game Night Commands"""
 
     def __init__(self, bot):
         self.bot = bot
+        self.suggestionDB = DBClient()
 
     @commands.command(name='suggestgame',
                       aliases=['sg'],
@@ -19,9 +22,11 @@ class GameNightCommands(commands.Cog):
             suggestionChannel = self.bot.get_channel(779541142818521108)
 
         suggestionAuthor = f'{ctx.author.name}#{ctx.author.discriminator}'
+        suggestionID = self.suggestionDB.add_suggestion(
+            ctx.author.id, ' '.join(args))
 
         reactionTo = await suggestionChannel.send(
-            f"{ctx.message.author.id} (**{suggestionAuthor}**) suggested at {ctx.message.created_at}:```css\n{' '.join(args)}``` ")
+            f"Suggestion number {suggestionID}\n**{suggestionAuthor}** suggested at `{ctx.message.created_at}`:```css\n{' '.join(args)}``` ")
         await reactionTo.add_reaction('👍')
         await reactionTo.add_reaction('👎')
 
@@ -31,7 +36,7 @@ class GameNightCommands(commands.Cog):
                       aliases=['cg', 'game'],
                       description="Accept a game for game night",
                       )
-    async def choose_game(self, ctx, messageID):
+    async def choose_game(self, ctx, suggestionID, time="7:00 PM", day="Saturday"):
         if (not await self.bot.is_owner(ctx.message.author)):
             print(ctx.message.author.id)
             await ctx.send("No")
@@ -50,25 +55,27 @@ class GameNightCommands(commands.Cog):
                 779541190252298270)
 
         if (acceptRole in ctx.author.roles):
-            try:
-                notifyUser = await Utilities.get_user(ctx, self, messageID)
+            #try:
+                acceptedInfo = self.suggestionDB.find({'_id': int(suggestionID)})
+                acceptedAuthor = ctx.guild.get_member(acceptedInfo['author'])
+                acceptedContent = acceptedInfo['content']
 
-                if (notifyUser.dm_channel is None):
-                    await notifyUser.create_dm()
-                    await notifyUser.dm_channel.send(
-                        f"Congratulations! Your suggestion {await Utilities.get_content(ctx, self, messageID)} was accepted!")
+                if (acceptedAuthor.dm_channel is None):
+                    await acceptedAuthor.create_dm()
+                    await acceptedAuthor.dm_channel.send(
+                        f"Congratulations! Your suggestion {acceptedContent} was accepted!")
                 else:
-                    await notifyUser.dm_channel.send(
-                        f"Congratulations! Your suggestion {await Utilities.get_content(ctx, self, messageID)} was accepted!")
+                    await acceptedAuthor.dm_channel.send(
+                        f"Congratulations! Your suggestion {acceptedContent} was accepted!")
 
-                await announcementChannel.send(f"{pingRole.mention}\nWe will play {await Utilities.get_content(ctx, self, messageID)}")
+                await announcementChannel.send(f"{pingRole.mention}\nWe will play ```css\n{acceptedContent}```"
+                                               f"this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}")
 
-                message = await ctx.fetch_message(messageID)
-                await message.delete()
+                await ctx.message.delete()
 
-            except:
-                await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
-                return
+            #except:
+            #    await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
+            #    return
 
     @commands.command(name='join',
                       description="Join game night role and pings")
@@ -95,6 +102,16 @@ class GameNightCommands(commands.Cog):
         except:
             await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
 
+    @commands.command(name='resetsuggestions',
+                      aliases=['reset', 'rs'],
+                      hidden=True,
+                      description="Reset suggestion counter to 1")
+    async def reset_suggestions(self, ctx):
+        if (await self.bot.is_owner(ctx.author)):
+            self.suggestionDB.delete_many()
+            with open("suggestionID.txt", 'w+') as f:
+                f.write("1\n")
+                await ctx.send("Reset suggestions")
 
 def setup(bot):
     bot.add_cog(GameNightCommands(bot))
