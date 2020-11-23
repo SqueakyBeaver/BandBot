@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from utilities import Utilities
-from suggestion_data import DBClient
+from database import DBClient
 
 
 class GameNightCommands(commands.Cog):
@@ -9,7 +9,7 @@ class GameNightCommands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.suggestionDB = DBClient()
+        self.suggestionDB = DBClient("gameIdeas")
 
     @commands.command(name='suggestgame',
                       aliases=['sg'],
@@ -17,15 +17,15 @@ class GameNightCommands(commands.Cog):
     async def suggest_game(self, ctx, *args):
 
         if (ctx.guild.id == 637316662801989658):
-            suggestionChannel = self.bot.get_channel(744413784319328286)
+            decisionChannel = self.bot.get_channel(744413784319328286)
         else:
-            suggestionChannel = self.bot.get_channel(779541142818521108)
+            decisionChannel = self.bot.get_channel(779541142818521108)
 
         suggestionAuthor = f'{ctx.author.name}#{ctx.author.discriminator}'
-        suggestionID = self.suggestionDB.add_suggestion(
+        suggestionID = self.suggestionDB.add(
             ctx.author.id, ' '.join(args))
 
-        reactionTo = await suggestionChannel.send(
+        reactionTo = await decisionChannel.send(
             f"Suggestion number {suggestionID}\n**{suggestionAuthor}** suggested at `{ctx.message.created_at}`:```css\n{' '.join(args)}``` ")
         await reactionTo.add_reaction('👍')
         await reactionTo.add_reaction('👎')
@@ -55,25 +55,25 @@ class GameNightCommands(commands.Cog):
                 779541190252298270)
 
         if (acceptRole in ctx.author.roles):
-            #try:
-                acceptedInfo = self.suggestionDB.find({'_id': int(suggestionID)})
-                acceptedAuthor = ctx.guild.get_member(acceptedInfo['author'])
-                acceptedContent = acceptedInfo['content']
+            # try:
+            acceptedInfo = self.suggestionDB.find({'_id': int(suggestionID)})
+            acceptedAuthor = ctx.guild.get_member(acceptedInfo['author'])
+            acceptedContent = acceptedInfo['content']
 
-                if (acceptedAuthor.dm_channel is None):
-                    await acceptedAuthor.create_dm()
-                    await acceptedAuthor.dm_channel.send(
-                        f"Congratulations! Your suggestion {acceptedContent} was accepted!")
-                else:
-                    await acceptedAuthor.dm_channel.send(
-                        f"Congratulations! Your suggestion {acceptedContent} was accepted!")
+            if (acceptedAuthor.dm_channel is None):
+                await acceptedAuthor.create_dm()
+                await acceptedAuthor.dm_channel.send(
+                    f"Congratulations! Your suggestion {acceptedContent} was accepted!")
+            else:
+                await acceptedAuthor.dm_channel.send(
+                    f"Congratulations! Your suggestion {acceptedContent} was accepted!")
 
-                await announcementChannel.send(f"{pingRole.mention}\nWe will play ```css\n{acceptedContent}```"
-                                               f"this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}")
+            await announcementChannel.send(f"{pingRole.mention}\nWe will play ```css\n{acceptedContent}```"
+                                           f"this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}")
 
-                await ctx.message.delete()
+            await ctx.message.delete()
 
-            #except:
+            # except:
             #    await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
             #    return
 
@@ -108,10 +108,17 @@ class GameNightCommands(commands.Cog):
                       description="Reset suggestion counter to 1")
     async def reset_suggestions(self, ctx):
         if (await self.bot.is_owner(ctx.author)):
-            self.suggestionDB.delete_many()
-            with open("suggestionID.txt", 'w+') as f:
+            if (ctx.guild.id == 637316662801989658):
+                decisionChannel = self.bot.get_channel(744413784319328286)
+            else:
+                decisionChannel = self.bot.get_channel(779541142818521108)
+
+            decisionChannel.purge(99999999999999999)
+            self.suggestionDB.clear()
+            with open("suggestionID.txt", 'w') as f:
                 f.write("1\n")
                 await ctx.send("Reset suggestions")
+
 
 def setup(bot):
     bot.add_cog(GameNightCommands(bot))
