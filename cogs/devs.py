@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class DevCommands(commands.Cog):
+class DevCommands(commands.Cog, name="Developer Commands"):
     '''These are the developer commands'''
 
     def __init__(self, bot):

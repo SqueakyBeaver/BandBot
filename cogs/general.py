@@ -3,7 +3,7 @@ from discord.ext import commands
 from database import DBClient
 
 
-class GeneralCommands(commands.Cog):
+class GeneralCommands(commands.Cog, name="General Commands"):
     """ General commands """
 
     def __init__(self, bot):

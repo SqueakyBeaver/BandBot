@@ -1,13 +1,10 @@
 import discord
 import os
+import cogs.daily_reminder as daily_reminder
 
 from discord.ext import commands
 from keep_alive import keep_alive
-
-from datetime import datetime
 from database import DBClient
-from discord.ext import tasks
-
 
 reminderDB = DBClient("dailyReminder")
 intents = discord.Intents.all()
@@ -39,19 +36,6 @@ if __name__ == '__main__':  # Ensures this is the file being ran
         bot.load_extension(extension)  # Loads every extension.
 
 
-async def daily_ping():
-    await bot.wait_until_ready()
-    ping_channel = bot.get_channel(637316663267819561)
-    while not bot.is_closed():
-        pingUsers = reminderDB.dataset.find({})
-        if (datetime.now().hour == 8 and datetime.now().minute == 0):
-            pingStr = ""
-            for userID in pingUsers:
-                user = ping_channel.guild.get_member(userID["_id"])
-                pingStr += f"{user.mention} "
-            await ping_channel.send(f"{pingStr}\nYou are amazing, have a great day!")
-
-
 keep_alive()  # Starts a webserver to be pinged.
-bot.loop.create_task(daily_ping())
+bot.loop.create_task(daily_reminder.daily_ping(bot))
 bot.run(token)  # Starts the bot
