@@ -4,7 +4,7 @@ import os
 
 class DBClient:
     def __init__(self, subname):
-        dbStr = os.environ.get("SUGGESTIONS_DB_STR")
+        dbStr = os.environ.get("SUGGESTIONS_DB_STR") # Not letting random people into my mongoDB cluster
         dbClient = pymongo.MongoClient(dbStr)
         info = dbClient["info"]
         table = info[subname]

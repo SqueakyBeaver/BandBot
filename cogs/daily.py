@@ -1,12 +1,11 @@
 from discord.ext import commands
 from database import DBClient
-from datetime import datetime, timedelta, timezone
-import pytz
+from datetime import datetime
 
 
-reminderDB = DBClient("dailyReminder", name="Daily Reminder Commands")
+reminderDB = DBClient("dailyReminder")
 
-class DailyReminderCommands(commands.Cog):
+class DailyReminderCommands(commands.Cog, name='Daily Reminder Commands'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -37,8 +36,7 @@ async def daily_ping(botClient):
     ping_channel = botClient.get_channel(767858104066637834)
     pinged = False
     while not botClient.is_closed():
-        localTimezone = pytz.timezone('America/Chicago')
-        if (datetime.now(localTimezone).hour == 3):
+        if (datetime.now().hour == 8):
             pingUsers = reminderDB.dataset.find({})
             if (not pinged):
                 pingStr = ""
@@ -47,6 +45,7 @@ async def daily_ping(botClient):
                     pingStr += f"{user.mention} "
                 await ping_channel.send(f"{pingStr}\nYou are amazing, have a great day!")
                 pinged = True
+            return
         else:
             pinged = False
             return

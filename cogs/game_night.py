@@ -4,7 +4,7 @@ from utilities import Utilities
 from database import DBClient
 
 
-class GameNightCommands(commands.Cog, name="Game Night Commands"):
+class GameNightCommands(commands.Cog, name='Game Night Commands'):
     """Game Night Commands"""
 
     def __init__(self, bot):

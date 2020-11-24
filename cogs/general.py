@@ -3,7 +3,7 @@ from discord.ext import commands
 from database import DBClient
 
 
-class GeneralCommands(commands.Cog, name="General Commands"):
+class GeneralCommands(commands.Cog, name='General Commands'):
     """ General commands """
 
     def __init__(self, bot):
@@ -21,13 +21,6 @@ class GeneralCommands(commands.Cog, name="General Commands"):
             feedbackChannel = self.bot.get_channel(779738194097995806)
             await feedbackChannel.send(f"{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
             await ctx.message.delete()
-
-    @commands.command(name='purge',
-                      decription="Bulk delete messages"
-                      )
-    @commands.has_permissions(manage_messages=True)
-    async def mass_delete(self, ctx, amount=100):
-        await ctx.channel.purge(limit=amount)
 
     @commands.command(name='bug',
                       aliases=['report', 'bugreport', 'br'],

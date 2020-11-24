@@ -1,6 +1,6 @@
 import discord
 import os
-import cogs.daily_reminder as daily_reminder
+import cogs.daily as daily
 
 from discord.ext import commands
 from keep_alive import keep_alive
@@ -28,7 +28,8 @@ extensions = [
     "cogs.devs",  # Commands for devs only
     "cogs.game_night",  # Commands for game nights
     "cogs.general",  # General commands
-    "cogs.daily_reminder"  # Daily reminder pings
+    "cogs.daily",  # Daily reminder pings
+    "cogs.moderation" # Moderation commands
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran
@@ -37,5 +38,5 @@ if __name__ == '__main__':  # Ensures this is the file being ran
 
 
 keep_alive()  # Starts a webserver to be pinged.
-bot.loop.create_task(daily_reminder.daily_ping(bot))
+bot.loop.create_task(daily.daily_ping(bot))
 bot.run(token)  # Starts the bot
