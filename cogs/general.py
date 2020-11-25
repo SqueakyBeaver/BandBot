@@ -15,23 +15,16 @@ class GeneralCommands(commands.Cog, name='General Commands'):
     async def ping(self, ctx):
         await ctx.send(f"{ctx.message.author.mention} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond")
 
-    @commands.command(name='feedback', aliases=['complain', 'compliment', 'suggest'], hidden=True)
-    async def feedback(self, ctx, *args):
-        if (not await self.bot.is_owner(ctx.message.author)):
-            feedbackChannel = self.bot.get_channel(779738194097995806)
-            await feedbackChannel.send(f"{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
-            await ctx.message.delete()
-
-    @commands.command(name='bug',
-                      aliases=['report', 'bugreport', 'br'],
-                      decription="Send a bug report")
+    @commands.command(name='feedback',
+                      aliases=['fb'],
+                      decription="Send feedback to the dev(s)")
     async def bug(self, ctx, *args):
         if (len(args) == 0):
-            await ctx.send("Type `!bug <bug you encountered>`")
+            await ctx.send("Type `!fb <your feedback>`")
             return
         else:
             feedbackChannel = self.bot.get_channel(779738194097995806)
-            await feedbackChannel.send(f"**BUG REPORT**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
+            await feedbackChannel.send(f"**FEEDBACK**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
             await ctx.message.delete()
             await ctx.send("Thank you for that")
 
