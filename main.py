@@ -24,12 +24,21 @@ async def on_ready():  # When the bot is ready
     print(bot.user)  # Prints the bot's username and identifier
 
 
+@bot.event
+async def on_message(message):
+    if message.author.id != bot.user.id:
+        if message.content.find("test") > -1:
+            await message.channel.send("Hey I work")
+
+    await bot.process_commands(message)
+
+
 extensions = [
     "cogs.devs",  # Commands for devs only
     "cogs.game_night",  # Commands for game nights
     "cogs.general",  # General commands
     "cogs.daily",  # Daily reminder pings
-    "cogs.moderation" # Moderation commands
+    "cogs.moderation"  # Moderation commands
 ]
 
 if __name__ == '__main__':  # Ensures this is the file being ran

@@ -1,9 +1,13 @@
 from discord.ext import commands
-from database import DBClient
-from datetime import datetime
+from database    import DBClient
+from datetime    import datetime
+
+import asyncio
+import discord
 
 
 reminderDB = DBClient("dailyReminder")
+
 
 class DailyReminderCommands(commands.Cog, name='Daily Reminder Commands'):
 
@@ -31,24 +35,20 @@ class DailyReminderCommands(commands.Cog, name='Daily Reminder Commands'):
             await ctx.send("You can't leave something you never joined")
 
 
-async def daily_ping(botClient):
+async def daily_ping(botClient: discord.Client):
     await botClient.wait_until_ready()
     ping_channel = botClient.get_channel(767858104066637834)
-    pinged = False
     while not botClient.is_closed():
-        if (datetime.now().hour == 8):
+        if (datetime.now().hour == 1 and datetime.now().minute == 18):
             pingUsers = reminderDB.dataset.find({})
-            if (not pinged):
-                pingStr = ""
-                for userID in pingUsers:
-                    user = ping_channel.guild.get_member(userID["_id"])
-                    pingStr += f"{user.mention} "
-                await ping_channel.send(f"{pingStr}\nYou are amazing, have a great day!")
-                pinged = True
-            return
+            pingStr = ""
+            for userID in pingUsers:
+                user = ping_channel.guild.get_member(userID["_id"])
+                pingStr += f"{user.mention} "
+            await ping_channel.send(f"{pingStr}\nYou are amazing, have a great day!")
+            await asyncio.sleep(60)
         else:
-            pinged = False
-            return
+            await asyncio.sleep(1)
 
 
 def setup(bot):

@@ -9,15 +9,17 @@ class GeneralCommands(commands.Cog, name='General Commands'):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='ping',
-                      aliases=['poing']
-                      )
+    @commands.command(
+        name='ping',
+        aliases=['poing']
+    )
     async def ping(self, ctx):
         await ctx.send(f"{ctx.message.author.mention} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond")
 
-    @commands.command(name='feedback',
-                      aliases=['fb'],
-                      decription="Send feedback to the dev(s)")
+    @commands.command(
+        name='feedback',
+        aliases=['fb'],
+        decription="Send feedback to the dev(s)")
     async def bug(self, ctx, *args):
         if (len(args) == 0):
             await ctx.send("Type `!fb <your feedback>`")
@@ -27,7 +29,6 @@ class GeneralCommands(commands.Cog, name='General Commands'):
             await feedbackChannel.send(f"**FEEDBACK**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
             await ctx.message.delete()
             await ctx.send("Thank you for that")
-
 
 def setup(bot):
     bot.add_cog(GeneralCommands(bot))

@@ -10,9 +10,15 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        if (not await ctx.bot.is_owner(ctx.author)):
+            raise commands.NotOwner("Nice try pal, but no")
+        return True
+
     @commands.command(  # Decorator to declare where a command is.
         name='reload',  # Name of the command, defaults to function name.
-        aliases=['rl'])
+        aliases=['rl']
+    )
     async def reload(self, ctx, cog):
         """
         Reloads a cog.
@@ -31,8 +37,10 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         else:
             await ctx.send('Unknown Cog')  # If the cog isn't found/loaded.
 
-    @commands.command(name="unload",
-                      aliases=['ul'])
+    @commands.command(
+        name="unload",
+        aliases=['ul']
+    )
     async def unload(self, ctx, cog):
         """
         Unload a cog.
@@ -44,7 +52,9 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         self.bot.unload_extension(cog)
         await ctx.send(f"`{cog}` has successfully been unloaded.")
 
-    @commands.command(name="load")
+    @commands.command(
+        name="load"
+    )
     async def load(self, ctx, cog):
         """
         Loads a cog.
@@ -57,8 +67,10 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         except commands.errors.ExtensionNotFound:
             await ctx.send(f"`{cog}` does not exist!")
 
-    @commands.command(name="listcogs",
-                      aliases=['lc'])
+    @commands.command(
+        name="listcogs",
+        aliases=['lc']
+    )
     async def listcogs(self, ctx):
         """
         Returns a list of all enabled commands.
@@ -68,11 +80,6 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         base_string += "\n".join([str(cog) for cog in self.bot.extensions])
         base_string += "\n```"
         await ctx.send(base_string)
-
-    async def cog_check(self, ctx):
-        if (not await ctx.bot.is_owner(ctx.author)):
-            raise commands.NotOwner("Nice try pal, but no")
-        return True
 
 
 def setup(bot):
