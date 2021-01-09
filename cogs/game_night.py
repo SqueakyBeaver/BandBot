@@ -28,7 +28,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             ctx.author.id, args)
 
         reactionTo = await decisionChannel.send(
-            f"Suggestion number {suggestionID}\n**{suggestionAuthor}** suggested at `{ctx.message.created_at}`:```css\n{args}``` ")
+            "Suggestion number {0}\n**{1}** suggested at `{2}`:```css\n{3}``` ".format(suggestionID, suggestionAuthor, ctx.message.created_at, args))
         await reactionTo.add_reaction('👍')
         await reactionTo.add_reaction('👎')
 
@@ -66,13 +66,14 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             if (acceptedAuthor.dm_channel is None):
                 await acceptedAuthor.create_dm()
                 await acceptedAuthor.dm_channel.send(
-                    f"Congratulations! Your suggestion {acceptedContent} was accepted!")
+                    "Congratulations! Your suggestion {0} was accepted!".format(acceptedContent))
             else:
                 await acceptedAuthor.dm_channel.send(
-                    f"Congratulations! Your suggestion {acceptedContent} was accepted!")
+                    "Congratulations! Your suggestion {0} was accepted!".format(
+                        acceptedContent))
 
-            await announcementChannel.send(f"{pingRole.mention}\nWe will play ```css\n{acceptedContent}```"
-                                           f"this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}")
+            await announcementChannel.send("{0}\nWe will play ```css\n{1}``` this {2} at {3}\n\nSuggested by {4}"
+                                           .format(pingRole.mention, acceptedContent, day, time, acceptedAuthor.mention))
 
             await ctx.message.delete()
 
@@ -80,7 +81,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             #    await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
             #    return
 
-    @commands.command(
+    @ commands.command(
         name='join',
         description="Join game night role and pings"
     )
@@ -95,11 +96,11 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             except:
                 await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
 
-    @commands.command(
+    @ commands.command(
         name='leave',
         description="Leave the game night role"
     )
-    @commands.has_role(779749274773749870)
+    @ commands.has_role(779749274773749870)
     async def leave_game_night(self, ctx):
         if (ctx.channel.id == 779541142818521108):
             await ctx.message.delete()
@@ -109,7 +110,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
         except:
             await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
 
-    @commands.command(
+    @ commands.command(
         name='resetsuggestions',
         aliases=['reset', 'rs'],
         hidden=True,

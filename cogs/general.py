@@ -14,7 +14,7 @@ class GeneralCommands(commands.Cog, name='General Commands'):
         aliases=['poing']
     )
     async def ping(self, ctx):
-        await ctx.send(f"{ctx.message.author.mention} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond")
+        await ctx.send("{0} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond".format(ctx.message.author.mention))
 
     @commands.command(
         name='feedback',
@@ -26,9 +26,11 @@ class GeneralCommands(commands.Cog, name='General Commands'):
             return
         else:
             feedbackChannel = self.bot.get_channel(779738194097995806)
-            await feedbackChannel.send(f"**FEEDBACK**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{' '.join(args)}```")
+            await feedbackChannel.send("**FEEDBACK**\n{0} (**{1}#{2}**) says ```css\n{3}```"
+                                       .format(ctx.author.id, ctx.message.author.name, ctx.message.author.discriminator, ' '.join(args)))
             await ctx.message.delete()
             await ctx.send("Thank you for that")
+
 
 def setup(bot):
     bot.add_cog(GeneralCommands(bot))

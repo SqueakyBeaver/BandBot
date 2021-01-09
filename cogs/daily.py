@@ -1,6 +1,6 @@
 from discord.ext import commands
-from database    import DBClient
-from datetime    import datetime
+from database import DBClient
+from datetime import datetime
 
 import asyncio
 import discord
@@ -39,16 +39,14 @@ async def daily_ping(botClient: discord.Client):
     await botClient.wait_until_ready()
     ping_channel = botClient.get_channel(767858104066637834)
     while not botClient.is_closed():
-        if (datetime.now().hour == 1 and datetime.now().minute == 18):
+        if (datetime.now().hour == 8):
             pingUsers = reminderDB.dataset.find({})
             pingStr = ""
             for userID in pingUsers:
                 user = ping_channel.guild.get_member(userID["_id"])
-                pingStr += f"{user.mention} "
-            await ping_channel.send(f"{pingStr}\nYou are amazing, have a great day!")
-            await asyncio.sleep(60)
-        else:
-            await asyncio.sleep(1)
+                pingStr += "{0} ".format(user.mention)
+            await ping_channel.send("{0}\nYou are amazing, have a great day!".format(pingStr))
+            await asyncio.sleep(3600)
 
 
 def setup(bot):
