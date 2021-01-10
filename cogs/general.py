@@ -14,7 +14,7 @@ class GeneralCommands(commands.Cog, name='General Commands'):
         aliases=['poing']
     )
     async def ping(self, ctx):
-        await ctx.send("{0} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond".format(ctx.message.author.mention))
+        await ctx.send("{0} **PONG!**\nI took `{1} ms` to respond".format(ctx.message.author.mention, round(self.bot.latency * 1000)))
 
     @commands.command(
         name='feedback',

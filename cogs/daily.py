@@ -47,6 +47,7 @@ async def daily_ping(botClient: discord.Client):
                 pingStr += "{0} ".format(user.mention)
             await ping_channel.send("{0}\nYou are amazing, have a great day!".format(pingStr))
             await asyncio.sleep(3600)
+        return
 
 
 def setup(bot):
