@@ -4,7 +4,8 @@ import os
 
 class DBClient:
     def __init__(self, subname):
-        dbStr = os.environ.get("DB_STR") # Not letting random people into my mongoDB cluster
+        # Not letting random people into my mongoDB cluster
+        dbStr = os.environ.get("DB_STR")
         dbClient = pymongo.MongoClient(dbStr)
         info = dbClient["info"]
         table = info[subname]
@@ -32,7 +33,7 @@ class DBClient:
         return self.dataset.find_one(query)
 
     def clear(self):
-        self.dataset.delete_many()
+        self.dataset.delete_many({})
 
     def delete(self, query):
         self.dataset.delete_one(query)
