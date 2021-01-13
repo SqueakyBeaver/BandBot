@@ -123,7 +123,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             else:
                 decisionChannel = self.bot.get_channel(779541142818521108)
 
-            decisionChannel.purge(99999999999999999)
+            await decisionChannel.purge()
             self.suggestionDB.clear()
             with open("suggestionID.txt", 'w') as f:
                 f.write("1\n")
