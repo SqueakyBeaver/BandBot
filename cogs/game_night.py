@@ -24,7 +24,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             decisionChannel = self.bot.get_channel(779541142818521108)
 
         suggestionAuthor = f'{ctx.author.name}#{ctx.author.discriminator}'
-        suggestionID = self.suggestionDB.add(
+        suggestionID = self.suggestionDB.add_suggestion(
             ctx.author.id, args)
 
         reactionTo = await decisionChannel.send(
