@@ -2,3 +2,9 @@
 __pycache__/
 cogs/__pycache__/
 *.pyc
+
+# Stuff for the bot hosting site https://repl.it
+.replit
+.env
+poetry.lock
+pyproject.toml
