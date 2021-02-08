@@ -1,4 +1,4 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 from database import DBClient
 from datetime import datetime
 
@@ -12,6 +12,8 @@ reminderDB = DBClient("dailyReminder")
 class DailyReminderCommands(commands.Cog, name='Daily Reminder Commands'):
 
     def __init__(self, bot):
+        bot.bg_task = self.daily_ping.start()
+        
         self.bot = bot
 
     @commands.command(name='joinping',
@@ -35,19 +37,26 @@ class DailyReminderCommands(commands.Cog, name='Daily Reminder Commands'):
             await ctx.send("You can't leave something you never joined")
 
 
-async def daily_ping(botClient: discord.Client):
-    await botClient.wait_until_ready()
-    ping_channel = botClient.get_channel(767858104066637834)
-    while not botClient.is_closed():
-        if (datetime.now().hour == 8):
+    @tasks.loop(minutes=1)
+    async def daily_ping(self):
+        await self.bot.wait_until_ready()
+
+        pinged = False
+        ping_channel = self.bot.get_channel(767858104066637834)
+
+        if datetime.now().hour == 8 and not pinged:
+            pinged = True
             pingUsers = reminderDB.dataset.find({})
             pingStr = ""
+
             for userID in pingUsers:
                 user = ping_channel.guild.get_member(userID["_id"])
                 pingStr += "{0} ".format(user.mention)
+
             await ping_channel.send("{0}\nYou are amazing, have a great day!".format(pingStr))
-            await asyncio.sleep(3600)
-        return
+
+        if datetime.now().hour != 8:
+            pinged = False
 
 
 def setup(bot):
