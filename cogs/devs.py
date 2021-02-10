@@ -1,4 +1,8 @@
-import discord
+import io
+import textwrap
+import traceback
+from contextlib import redirect_stdout
+
 from discord.ext import commands
 
 
@@ -9,6 +13,7 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 
     def __init__(self, bot):
         self.bot = bot
+        self._last_result = None
 
     async def cog_check(self, ctx):
         if (not await ctx.bot.is_owner(ctx.author)):
@@ -80,6 +85,68 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         base_string += "\n".join([str(cog) for cog in self.bot.extensions])
         base_string += "\n```"
         await ctx.send(base_string)
+
+    def cleanup_code(self, content):
+        """Automatically removes code blocks from the code."""
+
+        content.replace('\'', '\\\'').replace('\"', '\\\"')
+
+        if not content.startswith('```') or not content.endswith('```'):
+            print("Not good")
+            return {"blocked": False,
+                    "res": f'You need code blocks, bud. Try \n```\`\`\`py\n{content}\n\`\`\`\n```'}
+
+        if content.startswith('```') and content.endswith('```'):
+            return {"blocked": True,
+            "res": '\n'.join(content.replace('```', '').split('\n')[1:-1]).strip() + '\n'}
+
+    @commands.check(commands.is_owner())
+    @commands.command(hidden=True, name='eval')
+    async def _eval(self, ctx, *, body: str):
+        """Evaluates code"""
+
+        env = {
+            'bot': self.bot,
+            'ctx': ctx,
+            'channel': ctx.channel,
+            'author': ctx.author,
+            'guild': ctx.guild,
+            'message': ctx.message,
+            '_': self._last_result
+        }
+
+        env.update(globals())
+
+        cleaned = self.cleanup_code(body)
+
+        if not cleaned["blocked"]:
+            return await ctx.send(cleaned["res"])
+        
+        body = cleaned["res"]
+
+        stdout = io.StringIO()
+
+        to_compile = body
+
+        try:
+            exec(to_compile, env)
+        except Exception as e:
+            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+
+        # func = env['func']
+        try:
+            with redirect_stdout(stdout):
+                exec(to_compile, env)
+        except Exception as e:
+            value = stdout.getvalue()
+            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+        else:
+            value = stdout.getvalue()
+
+            await ctx.message.add_reaction('\u2705')
+
+            if value:
+                await ctx.send(f'```py\n{value}\n```')
 
 
 def setup(bot):

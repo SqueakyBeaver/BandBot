@@ -24,7 +24,8 @@ class BotClient(commands.Bot):
             "cogs.game_night",  # Commands for game nights
             "cogs.general",  # General commands
             "cogs.daily",  # Daily reminder pings
-            "cogs.moderation"  # Moderation commands
+            "cogs.moderation",  # Moderation commands
+            "cogs.help" # Help command
         ]
 
         if __name__ == '__main__':  # Ensures this is the file being ran
