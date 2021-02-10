@@ -1,10 +1,11 @@
 import discord
 import os
-import cogs.daily as daily
+import asyncio
 
 from discord.ext import commands, tasks
 from keep_alive import keep_alive
 from database import DBClient
+from datetime import datetime
 
 reminderDB = DBClient("dailyReminder")
 intents = discord.Intents.all()
@@ -32,7 +33,6 @@ class BotClient(commands.Bot):
             for extension in extensions:
                 self.load_extension(extension)  # Loads every extension.
 
-
     async def on_ready(self):  # When the bot is ready
         print("I'm in")
         print(self.user)  # Prints the bot's username and identifier
@@ -44,6 +44,23 @@ class BotClient(commands.Bot):
                 await message.channel.send("Hey I work")
 
         await self.process_commands(message)
+
+    async def daily_ping(self):
+        await self.wait_until_ready()
+
+        ping_channel = self.get_channel(767858104066637834)
+
+        while not self.is_closed():
+            if datetime.now().hour == 8:
+                pingUsers = reminderDB.dataset.find({})
+                pingStr = ""
+
+                for userID in pingUsers:
+                    user = ping_channel.guild.get_member(userID["_id"])
+                    pingStr += "{0} ".format(user.mention)
+
+                await ping_channel.send("{0}\nYou are amazing, have a great day!".format(pingStr))
+                asyncio.sleep(3600)
 
 
 
