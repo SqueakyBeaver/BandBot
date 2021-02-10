@@ -27,7 +27,7 @@ class BotClient(commands.Bot):
             "cogs.help"  # Help command
         ]
 
-        if __name__ == '__main__':  # Ensures this is the file being ran
+        if __name__ == '__main__':  # Ensures this is the file being run
             for extension in extensions:
                 self.load_extension(extension)  # Loads every extension.
 

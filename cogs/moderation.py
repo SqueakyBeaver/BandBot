@@ -2,35 +2,38 @@ import discord
 from discord.ext import commands
 import asyncio
 
-from discord.ext.commands.core import has_role
-
 
 class ModerationCommands(commands.Cog, name='Moderation Commands'):
-    purgeUsers = []
-
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        if (not commands.has_role("Moderator")):
-            raise commands.MissingRole("You are not a moderator, bud")
-        return True
 
-    async def will_purge(message):
-        return message.author in ModerationCommands.purgeUsers
+    async def bulk_delete(self, channel: discord.TextChannel, user_ids, limit = 100):
+        delete_list = []
+        count = 0
+        try:
+            async for message in channel.history(limit=100):
+                if message.author.id in user_ids and count < limit:
+                    delete_list.append(message)
+                    count += 1
+            await channel.delete_messages(delete_list)
+        except Exception as e:
+            return f'```py\n{e}\n```'
+        return f'Successfully purged {len(delete_list)} messages.'
 
     @commands.command(
         name='purge',
         decription="Bulk delete messages",
         usage="b!purge [amount=100] <user(s)>"
     )
-    # @commands.has_role("Moderator")
-    async def mass_delete(self, ctx, amount=100):
-        mentionedIDs = ctx.message.raw_mentions
-        self.purgeUsers = [ctx.guild.get_member(user) for user in mentionedIDs]
-        await ctx.message.delete()
-        await ctx.channel.purge(check=ModerationCommands.will_purge, limit=amount)
-        await ctx.send("Done.", delete_after=3)
+    @commands.has_permissions(manage_messages=True)
+    async def _purge(self, ctx, amount=100):
+        wait_message = await ctx.send("Working, please allow some time.")
+        async with ctx.channel.typing():
+            mentionedIDs = ctx.message.raw_mentions
+            await ctx.message.delete()
+            ret_str = await self.bulk_delete(ctx.channel, mentionedIDs, amount)
+        await wait_message.edit(content=ret_str)
 
     @commands.command(
         name='lockserver',
