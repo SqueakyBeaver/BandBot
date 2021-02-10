@@ -41,8 +41,7 @@ class BotClient(commands.Bot):
     async def on_message(self, message):
         if message.author.id != self.user.id:
             if message.content.find("test") > -1:
-                await message.channel.send("Hey I work")
-
+                pass
         await self.process_commands(message)
 
     async def daily_ping(self):

@@ -1,0 +1,18 @@
+[build-system]
+build-backend = "poetry.masonry.api"
+requires = ["poetry>=0.12"]
+
+[tool]
+[tool.poetry]
+authors = ["repl.it user <replituser@example.com>"]
+description = ""
+name = "bandbot"
+version = "0.1.0"
+[tool.poetry.dependencies]
+discord = "^"
+flask = "^"
+pymongo = "^"
+dnspython = "^"
+python = "^3.8"
+"discord.py" = "^1.5.1"
+[tool.poetry.dev-dependencies]
