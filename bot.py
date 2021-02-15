@@ -22,7 +22,7 @@ class BotClient(commands.Bot):
             "cogs.devs",  # Commands for devs only
             "cogs.game_night",  # Commands for game nights
             "cogs.general",  # General commands
-            "cogs.daily",  # Daily reminder pings
+            "cogs.quotes",  # Quotes commands
             "cogs.moderation",  # Moderation commands
             "cogs.help"  # Help command
         ]

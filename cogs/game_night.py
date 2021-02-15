@@ -28,7 +28,7 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             ctx.author.id, args)
 
         reactionTo = await decisionChannel.send(
-            "Suggestion number {0}\n**{1}** suggested at `{2}`:```css\n{3}``` ".format(suggestionID, suggestionAuthor, ctx.message.created_at, args))
+            f'Suggestion number {suggestionID}\n**{suggestionAuthor}** suggested at `{ctx.message.created_at}`:```css\n{ctx.message.created_at}``` ')
         await reactionTo.add_reaction('👍')
         await reactionTo.add_reaction('👎')
 
@@ -66,14 +66,12 @@ class GameNightCommands(commands.Cog, name='Game Night Commands'):
             if (acceptedAuthor.dm_channel is None):
                 await acceptedAuthor.create_dm()
                 await acceptedAuthor.dm_channel.send(
-                    "Congratulations! Your suggestion {0} was accepted!".format(acceptedContent))
+                    f'Congratulations! Your suggestion {acceptedContent} was accepted!')
             else:
                 await acceptedAuthor.dm_channel.send(
-                    "Congratulations! Your suggestion {0} was accepted!".format(
-                        acceptedContent))
+                    f'Congratulations! Your suggestion {acceptedContent} was accepted!')
 
-            await announcementChannel.send("{0}\nWe will play ```css\n{1}``` this {2} at {3}\n\nSuggested by {4}"
-                                           .format(pingRole.mention, acceptedContent, day, time, acceptedAuthor.mention))
+            await announcementChannel.send(f'{pingRole.mention}\nWe will play ```css\n{acceptedContent}``` this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}')
 
             await ctx.message.delete()
 

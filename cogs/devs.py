@@ -55,7 +55,7 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
             await ctx.send("Cog is not loaded!")
             return
         self.bot.unload_extension(cog)
-        await ctx.send("`{0}` has successfully been unloaded.".format(cog))
+        await ctx.send('`{cog}` has successfully been unloaded.')
 
     @commands.command(
         name="load"
@@ -67,10 +67,10 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         try:
 
             self.bot.load_extension(cog)
-            await ctx.send("`{0}` has successfully been loaded.".format(cog))
+            await ctx.send(f'`{cog}` has successfully been loaded.')
 
         except commands.errors.ExtensionNotFound:
-            await ctx.send("`{0}` does not exist!".format(cog))
+            await ctx.send(f'`{cog}` does not exist!')
 
     @commands.command(
         name="listcogs",

@@ -78,9 +78,9 @@ class ModerationCommands(commands.Cog, name='Moderation Commands'):
                 channel.set_permissions(muted, send_messages=False)
 
         if muted in user.roles:
-            await ctx.send("{0} was muted".format(user.mention))
+            await ctx.send(f'{user.mention} was muted')
         else:
-            await ctx.send("{0} is already muted/cannot be muted".format(user.mention))
+            await ctx.send(f'{user.mention} is already muted/cannot be muted')
         await user.add_roles(muted)
 
         await asyncio.sleep(time * 60)
@@ -95,9 +95,9 @@ class ModerationCommands(commands.Cog, name='Moderation Commands'):
         muted = discord.utils.get(ctx.message.guild.roles, name="Muted")
         if user.has_role(muted):
             await user.remove_roles(muted, reason="Unmured")
-            await ctx.send("{0} was unmuted".format(user.mention))
+            await ctx.send(f'{user.mention} was unmuted')
         else:
-            await ctx.send("{0} is not muted".format(user.mention))
+            await ctx.send(f'{user.mention} is not muted')
 
 
 def setup(bot):
