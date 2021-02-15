@@ -18,6 +18,11 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
         self.pinged = False
         self.bot: commands.Bot = bot
 
+    def get_quotes(self):
+        daily_quote = wikiquote.quote_of_the_day()
+        return (f'{daily_quote[0]}\n~{daily_quote[1]}',
+                f'{random.choice(wikiquote.quotes("Linus Torvalds"))}\n ~Linus Torvalds')
+
     @commands.command(name='joinping',
                       aliases=['jp'],
                       description="Join the daily quote ping")
@@ -62,7 +67,6 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
         except asyncio.TimeoutError:
             return await ctx.send("You took too long, stupid slow human")
 
-
         if "y" in answer.content.lower():
             author = random.choice(wikiquote.random_titles())
             res = random.choice(wikiquote.quotes(author))
@@ -101,10 +105,12 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
         await ctx.send(f'Random result from topic: `{search_res[int(answer.content) - 1]}`'
                        f'\n\n```\n{random.choice(wikiquote.quotes(search_res[int(answer.content) - 1]))}```')
 
-    def get_quotes(self):
-        daily_quote = wikiquote.quote_of_the_day()
-        return (f'{daily_quote[0]}\n~{daily_quote[1]}',
-                f'{random.choice(wikiquote.quotes("Linus Torvalds"))}\n ~Linus Torvalds')
+    @commands.command(name="dailyquote",
+                     aliases=["qotd"],
+                     description="Get the daily quote"
+    )
+    async def _qotd(self, ctx):
+        return await ctx.send(f'{ctx.author.mention}\n{self.get_quotes()[0]}')
 
     @tasks.loop(minutes=1)
     async def daily_ping(self):
