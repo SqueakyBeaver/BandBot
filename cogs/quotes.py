@@ -46,7 +46,7 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
     @commands.command(
         name="quote",
         description="Random quote from WikiQuote",
-        usage="quote [search]"
+        usage="[search]"
     )
     async def _quote(self, ctx, *query):
         if ' '.join(query):
