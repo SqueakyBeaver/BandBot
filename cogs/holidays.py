@@ -62,8 +62,9 @@ class Holidays(commands.Cog):
         for i in res:
             res_str += i + "\n"
 
-        e = discord.Embed(title=f"Holidays for {'0' if date.month < 10 else ''}"
-                          f"{date.month}/{'0' if date.day < 10 else ''}{date.day}/{date.year}", description=res_str,)
+        e = discord.Embed(title=f"[Holidays for {'0' if date.month < 10 else ''}"
+                          f"{date.month}/{'0' if date.day < 10 else ''}{date.day}/{date.year}]"
+                          f"(https://checkiday.com/{date.month}/{date.day}/{date.year})", description=res_str,)
 
         e.set_footer(text=f"{count} results",
                      icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")  # I know it's a a jpg, I'm sorry
@@ -91,7 +92,7 @@ class Holidays(commands.Cog):
             for i in res:
                 res_str += i + "\n"
 
-            e = discord.Embed(title=f"Today's Holidays", description=res_str,)
+            e = discord.Embed(title=f"[Today's Holidays](https://checkiday.com/)", description=res_str,)
             # AAAAAAAAAAA IT'S A JPEG?!!
             e.set_footer(text=f"There are {count} holidays today",
                          icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")
