@@ -9,6 +9,8 @@ from datetime import datetime
 
 class Holidays(commands.Cog):
     def __init__(self, bot):
+        bot.daily_holidays_loop = self.daily_holidays.start()
+        self.already_pinged = False
         self.bot = bot
 
     def get_holidays(self, date):
@@ -78,7 +80,7 @@ class Holidays(commands.Cog):
         white_board = self.bot.get_channel(767843340137529397)
         tz = pytz.timezone("America/Chicago")
 
-        if datetime.now(tz).hour == 0:  # Please work
+        if datetime.now(tz).hour == 0 and not self.already_sent:  # Please work
             res = self.get_holidays("today")
             if "ERROR" in res[0]:  # Thank you Title case for making this possible
                 return await white_board.send(f"{white_board.author.mention}\n{res.__next__()}")
@@ -99,6 +101,9 @@ class Holidays(commands.Cog):
                          icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")
 
             await white_board.send(embed=e)
+            self.already_pinged = True
+        else:
+            self.already_pinged = False
 
 
 def setup(bot):
