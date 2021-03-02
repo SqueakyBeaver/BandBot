@@ -11,8 +11,7 @@ class Holidays(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_holidays(self, day: str):
-        date = dateparser.parse(day)
+    def get_holidays(self, date):
         link = f"https://www.checkiday.com/{date.month}/{date.day}/{date.year}"
         res = []
 
@@ -47,26 +46,30 @@ class Holidays(commands.Cog):
         description="Get holidays for a specific date.",
         aliases=["h"]
     )
-    async def _holidays(self, ctx, *, date):
-        async with ctx.typing():
-            res = self.get_holidays(date)
-            if "ERROR" in res[0]:  # Thank you Title case for making this possible
-                return await ctx.send(f"{ctx.author.mention}\n{res.__next__()}")
+    async def _holidays(self, ctx, *, day):
+        date = dateparser.parse(day)
 
-            if res[0]is None:
-                return await ctx.send(f"{ctx.author.mention} No results found :(")
+        res = self.get_holidays(date)
+        if "ERROR" in res[0]:  # Thank you Title case for making this possible
+            return await ctx.send(f"{ctx.author.mention}\n{res[0]}")
 
-            count = sum(1 for i in res)
+        if res[0] is None:
+            return await ctx.send(f"{ctx.author.mention} No results found :(")
 
-            res_str =""
-            for i in res:
-                res_str += i + "\n"
-                print(i)
+        count = sum(1 for i in res)
 
-            e = discord.Embed(title=f"Holidays for {date}", description=res_str,)
-            e.set_footer(text=f"{count} results", icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg") # AAAAAAAAAAA IT'S A JPEG?!!
+        res_str = ""
+        for i in res:
+            res_str += i + "\n"
+            print(i)
 
-            await ctx.send(ctx.author.mention, embed=e)
+        e = discord.Embed(title=f"Holidays for {'0' if date.month < 10 else ''}"
+                          f"{date.month}/{'0' if date.day < 10 else ''}{date.day}/{date.year}", description=res_str,)
+
+        e.set_footer(text=f"{count} results",
+                     icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")  # I know it's a a jpg, I'm sorry
+
+        await ctx.send(ctx.author.mention, embed=e)
 
     @tasks.loop(minutes=1)
     async def daily_holidays(self):
@@ -75,23 +78,25 @@ class Holidays(commands.Cog):
         white_board = self.bot.get_channel(767843340137529397)
         tz = pytz.timezone("America/Chicago")
 
-        if datetime.now(tz).hour == 0: # Please work
+        if datetime.now(tz).hour == 0:  # Please work
             res = self.get_holidays("today")
             if "ERROR" in res[0]:  # Thank you Title case for making this possible
                 return await white_board.send(f"{white_board.author.mention}\n{res.__next__()}")
 
-            if res[0]is None:
+            if res[0] is None:
                 return await white_board.send(f"{white_board.author.mention} No results found :(")
 
             count = sum(1 for i in res)
 
-            res_str =""
+            res_str = ""
             for i in res:
                 res_str += i + "\n"
                 print(i)
 
             e = discord.Embed(title=f"Today's Holidays", description=res_str,)
-            e.set_footer(text=f"There are {count} holidays today", icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg") # AAAAAAAAAAA IT'S A JPEG?!!
+            # AAAAAAAAAAA IT'S A JPEG?!!
+            e.set_footer(text=f"There are {count} holidays today",
+                         icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")
 
             await white_board.send(embed=e)
 
