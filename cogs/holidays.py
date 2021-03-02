@@ -75,11 +75,25 @@ class Holidays(commands.Cog):
         white_board = self.bot.get_channel(767843340137529397)
         tz = pytz.timezone("America/Chicago")
 
-        # if datetime.now(tz).hour == 0:
-        holidays = self.get_holidays("today")
+        if datetime.now(tz).hour == 0: # Please work
+            res = self.get_holidays("today")
+            if "ERROR" in res[0]:  # Thank you Title case for making this possible
+                return await white_board.send(f"{white_board.author.mention}\n{res.__next__()}")
 
-        for i in holidays:
-            print(i)
+            if res[0]is None:
+                return await white_board.send(f"{white_board.author.mention} No results found :(")
+
+            count = sum(1 for i in res)
+
+            res_str =""
+            for i in res:
+                res_str += i + "\n"
+                print(i)
+
+            e = discord.Embed(title=f"Today's Holidays", description=res_str,)
+            e.set_footer(text=f"There are {count} holidays today", icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg") # AAAAAAAAAAA IT'S A JPEG?!!
+
+            await white_board.send(embed=e)
 
 
 def setup(bot):
