@@ -61,7 +61,6 @@ class Holidays(commands.Cog):
         res_str = ""
         for i in res:
             res_str += i + "\n"
-            print(i)
 
         e = discord.Embed(title=f"Holidays for {'0' if date.month < 10 else ''}"
                           f"{date.month}/{'0' if date.day < 10 else ''}{date.day}/{date.year}", description=res_str,)
@@ -91,7 +90,6 @@ class Holidays(commands.Cog):
             res_str = ""
             for i in res:
                 res_str += i + "\n"
-                print(i)
 
             e = discord.Embed(title=f"Today's Holidays", description=res_str,)
             # AAAAAAAAAAA IT'S A JPEG?!!
