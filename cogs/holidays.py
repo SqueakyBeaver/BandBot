@@ -58,7 +58,7 @@ class Holidays(commands.Cog):
         if res[0] is None:
             return await ctx.send(f"{ctx.author.mention} No results found :(")
 
-        count = sum(1 for i in res)
+        count = len(res)
 
         res_str = ""
         for i in res:
@@ -82,13 +82,7 @@ class Holidays(commands.Cog):
 
         if datetime.now(cst).hour == 0 and not self.already_sent:  # Please work
             res = self.get_holidays("today")
-            if "ERROR" in res[0]:  # Thank you Title case for making this possible
-                return await white_board.send(f"{white_board.author.mention}\n{res.__next__()}")
-
-            if res[0] is None:
-                return await white_board.send(f"{white_board.author.mention} No results found :(")
-
-            count = sum(1 for i in res)
+            count = len(res)
 
             res_str = ""
             for i in res:
@@ -96,7 +90,7 @@ class Holidays(commands.Cog):
 
             e = discord.Embed(
                 title=f"Today's Holidays", description=res_str, url="https://checkiday.com/")
-            # AAAAAAAAAAA IT'S A JPEG?!!
+
             e.set_footer(text=f"There are {count} holidays today",
                          icon_url="https://i.pinimg.com/originals/b0/b8/5c/b0b85cd8797638d0c80035f572b0cbd3.jpg")
 
