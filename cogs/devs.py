@@ -6,7 +6,7 @@ from contextlib import redirect_stdout
 from discord.ext import commands
 
 
-class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hidden=True)):
+class DevCommands(commands.Cog, name="Developer Commands", command_attrs=dict(hidden=True)):
     """
     These are the developer commands
     """
@@ -21,8 +21,8 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         return True
 
     @commands.command(  # Decorator to declare where a command is.
-        name='reload',  # Name of the command, defaults to function name.
-        aliases=['rl']
+        name="reload",  # Name of the command, defaults to function name.
+        aliases=["rl"]
     )
     async def reload(self, ctx, cog):
         """
@@ -30,21 +30,21 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         """
         # A list of the bot's cogs/extensions.
         extensions = self.bot.extensions
-        if cog == 'all':  # Lets you reload all cogs at once
+        if cog == "all":  # Lets you reload all cogs at once
             for extension in extensions:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
-            await ctx.send('Done')
+            await ctx.send("Done")
         if cog in extensions:
             self.bot.unload_extension(cog)  # Unloads the cog
             self.bot.load_extension(cog)  # Loads the cog
-            await ctx.send('Done')  # Sends a message where content='Done'
+            await ctx.send("Done")  # Sends a message where content="Done"
         else:
-            await ctx.send('Unknown Cog')  # If the cog isn't found/loaded.
+            await ctx.send("Unknown Cog")  # If the cog isn't found/loaded.
 
     @commands.command(
         name="unload",
-        aliases=['ul']
+        aliases=["ul"]
     )
     async def unload(self, ctx, cog):
         """
@@ -55,7 +55,7 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
             await ctx.send("Cog is not loaded!")
             return
         self.bot.unload_extension(cog)
-        await ctx.send('`{cog}` has successfully been unloaded.')
+        await ctx.send("`{cog}` has successfully been unloaded.")
 
     @commands.command(
         name="load"
@@ -67,14 +67,14 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         try:
 
             self.bot.load_extension(cog)
-            await ctx.send(f'`{cog}` has successfully been loaded.')
+            await ctx.send(f"`{cog}` has successfully been loaded.")
 
         except commands.errors.ExtensionNotFound:
-            await ctx.send(f'`{cog}` does not exist!')
+            await ctx.send(f"`{cog}` does not exist!")
 
     @commands.command(
         name="listcogs",
-        aliases=['lc']
+        aliases=["lc"]
     )
     async def listcogs(self, ctx):
         """
@@ -87,32 +87,33 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
         await ctx.send(base_string)
 
     def cleanup_code(self, content):
-        """Automatically removes code blocks from the code."""
+        """Cleanup for code block inputs"""
 
-        content.replace('\'', '\\\'').replace('\"', '\\\"')
+        content.replace("\'", "\\\'").replace("\"", "\\\"")
 
-        if not content.startswith('```') or not content.endswith('```'):
+        if not content.startswith("```") or not content.endswith("```"):
             print("Not good")
             return {"blocked": False,
-                    "res": f'You need code blocks, bud. Try \n```\`\`\`py\n{content}\n\`\`\`\n```'}
+                    "res": f"You need code blocks, bud. Try \n```\`\`\`py\n{content}\n\`\`\`\n```"}
 
-        if content.startswith('```') and content.endswith('```'):
+        content = content.replace("```", "\n```").strip()
+        if content.startswith("```py\n"):
             return {"blocked": True,
-            "res": '\n'.join(content.replace('```', '').split('\n')[1:-1]).strip() + '\n'}
+            "res": "\n".join(content.split("\n")[1:-1])}
 
     @commands.check(commands.is_owner())
-    @commands.command(hidden=True, name='eval')
+    @commands.command(hidden=True, name="eval")
     async def _eval(self, ctx, *, body: str):
         """Evaluates code"""
 
         env = {
-            'bot': self.bot,
-            'ctx': ctx,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            'guild': ctx.guild,
-            'message': ctx.message,
-            '_': self._last_result
+            "bot": self.bot,
+            "ctx": ctx,
+            "channel": ctx.channel,
+            "author": ctx.author,
+            "guild": ctx.guild,
+            "message": ctx.message,
+            "_": self._last_result
         }
 
         env.update(globals())
@@ -121,32 +122,34 @@ class DevCommands(commands.Cog, name='Developer Commands', command_attrs=dict(hi
 
         if not cleaned["blocked"]:
             return await ctx.send(cleaned["res"])
-        
+
         body = cleaned["res"]
 
         stdout = io.StringIO()
 
-        to_compile = body
+        # to_compile = f"async def func():\n{textwrap.indent(body, '    ')}"
+        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
         try:
             exec(to_compile, env)
         except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            print(f"{e.__class__.__name__}: {e}")
+            return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
 
-        # func = env['func']
+        func = env["func"]
         try:
             with redirect_stdout(stdout):
-                exec(to_compile, env)
+                ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
             value = stdout.getvalue()
 
-            await ctx.message.add_reaction('\u2705')
+            await ctx.message.add_reaction("\u2705")
 
             if value:
-                await ctx.send(f'```py\n{value}\n```')
+                await ctx.send(f"```py\n{value}\n```")
 
 
 def setup(bot):
