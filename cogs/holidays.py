@@ -38,9 +38,9 @@ class Holidays(commands.Cog):
             sep = i.split('/')
 
             if "timeanddate.com" in i:
-                desc_str += f"**On This Day in History**\n[Learn More]({i})\n"
+                desc_str += f"\n**- On This Day in History**\n[Learn More]({i})\n"
                 continue
-            desc_str += f"**{sep[-1].replace('-', ' ').title()}**\n[Learn More]({i})\n"
+            desc_str += f"\n**- {sep[-1].replace('-', ' ').title()}**\n[Learn More]({i})\n"
 
         res = discord.Embed(title=f"Holidays for {'0' if date.month < 10 else ''}"
                             f"{date.month}/{'0' if date.day < 10 else ''}{date.day}/{date.year}",
