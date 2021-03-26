@@ -131,9 +131,9 @@ class DevCommands(commands.Cog, name="Developer Commands", command_attrs=dict(hi
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
         try:
-            exec(to_compile, env)
+            exec(to_compile.strip()+"\n", env)
         except Exception as e:
-            print(f"{e.__class__.__name__}: {e}")
+            print(e)
             return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
 
         func = env["func"]
