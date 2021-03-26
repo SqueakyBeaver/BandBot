@@ -93,12 +93,12 @@ class DevCommands(commands.Cog, name="Developer Commands", command_attrs=dict(hi
 
         if not content.startswith("```") or not content.endswith("```"):
             print("Not good")
-            return {"blocked": False,
-                    "res": f"You need code blocks, bud. Try \n```\`\`\`py\n{content}\n\`\`\`\n```"}
+            return {"blocks": False,
+                    "res": f"You need code blocks. Try \n\`\`\`py\n{content}\n\`\`\`\n"}
 
         content = content.replace("```", "\n```").strip()
         if content.startswith("```py\n"):
-            return {"blocked": True,
+            return {"blocks": True,
             "res": "\n".join(content.split("\n")[1:-1])}
 
     @commands.check(commands.is_owner())
@@ -120,18 +120,17 @@ class DevCommands(commands.Cog, name="Developer Commands", command_attrs=dict(hi
 
         cleaned = self.cleanup_code(body)
 
-        if not cleaned["blocked"]:
+        if not cleaned["blocks"]:
             return await ctx.send(cleaned["res"])
 
         body = cleaned["res"]
 
         stdout = io.StringIO()
 
-        # to_compile = f"async def func():\n{textwrap.indent(body, '    ')}"
-        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
+        to_compile = f"async def func():\n{textwrap.indent(body, '    ')}"
 
         try:
-            exec(to_compile.strip()+"\n", env)
+            exec(to_compile, env)
         except Exception as e:
             print(e)
             return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
