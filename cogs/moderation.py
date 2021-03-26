@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import TreeBuilder
 import discord
 from discord.ext import commands, tasks
 import asyncio
@@ -5,10 +6,35 @@ from datetime import datetime
 import dateparser
 
 
+class Checks():
+    def is_author(author):
+        def inner_check(message):
+            return message.author == author
+        return inner_check
+
+    def is_author_channel(author):
+        def inner_check(message):
+            return message.author == author and message.raw_channel_mentions
+        return inner_check
+
+
 class ModerationCommands(commands.Cog, name='Moderation Commands'):
     def __init__(self, bot):
         self.bot = bot
         self.tasks = []
+
+    # hoices: List of choices
+    # res: Dictionary of results same size as choices
+    # check: Function used to check if the response meets a requirement
+    async def choose(self, ctx, choices, res, check=Checks.is_author):
+        try:
+            for i in choices:
+                await ctx.send(i)
+                answer = await self.bot.wait_for('message', check=check, timeout=30)
+        except asyncio.TimeoutError:
+            return await ctx.send("You took too long, stupid slow human")
+        if res[answer]:
+            return res[answer]
 
     async def task(self, end, func_end, *args, **kwargs):
         await self.bot.wait_until_ready()
@@ -47,30 +73,67 @@ class ModerationCommands(commands.Cog, name='Moderation Commands'):
         await wait_message.edit(content=ret_str)
 
     @commands.command(
-        name='lockserver',
-        description="Lock the server",
-        aliases=['serverlock', 'ls', 'sl']
+        name='lock',
+        description="Lock something",
     )
     # @commands.has_role("Moderator")
-    async def lock_server(self, ctx):
-        role = ctx.guild.default_role
-        perms = role.permissions
+    async def _lock(self, ctx, *, dest: str):
+        channels = {}
+        everyone = ctx.guild.default_role
+        perms = everyone.permissions
         perms.send_messages = False
-        await role.edit(permissions=perms)
-        await ctx.send("Server locked")
+
+        for i in ctx.guild.text_channels:
+            channels[i.id] = i
+
+        async def server():
+            await everyone.edit(permissions=perms)
+            await ctx.send("Server locked")
+
+        async def channel():
+            await ctx.channel.set_permissions(everyone, send_messages=False)
+
+            # Later
+            # self.choose(ctx, ["Which channel?"], channels, Checks.is_author_channel)
+        if "channel" in dest.lower():
+            await channel()
+            return await ctx.send("Locked")
+        if "server" in dest.lower():
+            await server()
+            return await ctx.send("Locked")
+
+        await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
 
     @commands.command(
-        name='unlockserver',
-        description="Unlock the server",
-        aliases=['serverunlock', 'us', 'su']
+        name="unlock",
+        description="Unlock something",
     )
     # @commands.has_role("Moderator")
-    async def unlock_server(self, ctx):
-        role = ctx.guild.default_role
-        perms = role.permissions
+    async def _unlock(self, ctx, dest):
+        channels = {}
+        everyone = ctx.guild.default_role
+        perms = everyone.permissions
         perms.send_messages = True
-        await role.edit(permissions=perms)
-        await ctx.send("Server unlocked")
+
+        for i in ctx.guild.text_channels:
+            channels[i.id] = i
+
+        async def server():
+            await everyone.edit(permissions=perms)
+
+        async def channel():
+            await ctx.channel.set_permissions(everyone, send_messages=None)
+
+            # Later
+            # self.choose(ctx, ["Which channel?"], channels, Checks.is_author_channel)
+        if "channel" in dest.lower():
+            await channel()
+            return await ctx.send("Unlocked")
+        if "server" in dest.lower():
+            await server()
+            return await ctx.send("Unlocked")
+
+        await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
 
     @commands.command(
         name="mute",
