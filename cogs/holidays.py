@@ -8,7 +8,9 @@ import dateparser
 from datetime import datetime
 
 
-class Holidays(commands.Cog):
+class Holidays(commands.Cog, name="holiday"):
+    """ Commands to find holidays from checkiday.com """
+
     def __init__(self, bot):
         bot.daily_holidays_loop = self.daily_holidays.start()
         self.already_sent = False

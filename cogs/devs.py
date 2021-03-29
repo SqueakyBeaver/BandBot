@@ -6,10 +6,8 @@ from contextlib import redirect_stdout
 from discord.ext import commands
 
 
-class DevCommands(commands.Cog, name="Developer Commands", command_attrs=dict(hidden=True)):
-    """
-    These are the developer commands
-    """
+class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True)):
+    """ Developer commands """
 
     def __init__(self, bot):
         self.bot = bot

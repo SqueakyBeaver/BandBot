@@ -22,7 +22,7 @@ class Help(commands.Cog):
     def format_help_for(self, item):
         embed = discord.Embed(colour=discord.Colour.blurple(),
                               timestamp=datetime.datetime.utcnow())
-        embed.set_footer(text=f"Use .help <command> for more information.")
+        embed.set_footer(text=f"Use b!help <command> for more information.")
         if isinstance(item, commands.Cog):
             embed.title = item.qualified_name
             embed.description = type(item).__doc__ or "Nothing provided."
@@ -78,7 +78,7 @@ class Help(commands.Cog):
                 for chunk in [n[x:x+25] for x in range(0, len(n), 25)]:
                     await ctx.author.send("".join(chunk))
         else:
-            item = self.bot.get_cog(cmd) or self.bot.get_command(cmd)
+            item = self.bot.get_cog(cmd.lower()) or self.bot.get_command(cmd.lower())
             if not item:
                 return await ctx.send(f"Couldn't find any cog/command named '{cmd}'.")
             await ctx.send(embed=self.format_help_for(item))

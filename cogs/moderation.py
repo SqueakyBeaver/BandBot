@@ -18,7 +18,9 @@ class Checks():
         return inner_check
 
 
-class ModerationCommands(commands.Cog, name='Moderation Commands'):
+class ModerationCommands(commands.Cog, name="moderation"):
+    """ Commands for moderators to be used by moderators """
+
     def __init__(self, bot):
         self.bot = bot
         self.tasks = []

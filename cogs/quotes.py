@@ -11,7 +11,8 @@ import random
 reminderDB = DBClient("dailyReminder")
 
 
-class QuotesCommands(commands.Cog, name='Quote Commands'):
+class QuotesCommands(commands.Cog, name="quotes"):
+    """ Commands for Quotes """
 
     def __init__(self, bot):
         bot.bg_task = self.daily_ping.start()
