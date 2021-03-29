@@ -20,8 +20,8 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
 
     def get_quotes(self):
         daily_quote = wikiquote.quote_of_the_day()
-        return (f'{daily_quote[0]}\n~{daily_quote[1]}',
-                f'{random.choice(wikiquote.quotes("Linus Torvalds"))}\n ~Linus Torvalds')
+        return f"{daily_quote[0]}\n~{daily_quote[1]}"
+
 
     @commands.command(name='joinping',
                       aliases=['jp'],
@@ -122,14 +122,13 @@ class QuotesCommands(commands.Cog, name='Quote Commands'):
             self.pinged = True
             pingUsers = reminderDB.dataset.find({})
             pingStr = ""
-            quotes = self.get_quotes()
+            quote = self.get_quotes()
 
             for userID in pingUsers:
                 user = ping_channel.guild.get_member(userID["_id"])
                 pingStr += f'{user.mention}'
 
-            await ping_channel.send(f'{pingStr}\n```\n{quotes[0]}```')
-            await ping_channel.send(f'Also,\n```\n{quotes[1]}```')
+            await ping_channel.send(f'{pingStr}\n```\n{quote}```')
 
         if datetime.now().hour != 8:
             self.pinged = False
