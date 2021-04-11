@@ -3,9 +3,7 @@ import os
 
 from discord.ext import commands
 from keep_alive import keep_alive
-from database import DBClient
 
-reminderDB = DBClient("dailyReminder")
 intents = discord.Intents.all()
 token = os.environ.get("DISCORD_BOT_SECRET")
 
@@ -20,7 +18,7 @@ class BotClient(commands.Bot):
                          )
         extensions = [
             "cogs.devs",  # Commands for devs only
-            "cogs.game_night",  # Commands for game nights
+            # "cogs.game_night",  # Commands for game nights; I need to rewrite this
             "cogs.general",  # General commands
             "cogs.quotes",  # Quotes commands
             "cogs.moderation",  # Moderation commands

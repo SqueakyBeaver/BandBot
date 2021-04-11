@@ -1,45 +1,64 @@
 import pymongo
 import os
+import json
 
 
-class DBClient(pymongo.MongoClient):
-    def __init__(self, subname: str):
-        # Not letting random people into my mongoDB cluster
-        dbStr = os.environ.get("DB_STR")
-        dbClient: pymongo.MongoClient = pymongo.MongoClient(dbStr)
-        info = dbClient["info"]
-        table = info[subname]
-        self.dataset = table
+class DBClient():
+    def __init__(self, file_name: str):
+        self.file_name = "backend/" + file_name + ".json"
+        with open(self.file_name, "r") as file:
+            self.data = json.load(file)
 
-    def get_suggestion_id():
-        with open("suggestionID.txt", 'r+') as f:
-            Id = int(f.readline())
-            f.seek(0)
-            f.write(str(Id + 1))
-            f.truncate()
-            return Id
+    def update_data(self, file):
+        self.data = json.load(file)
+
+    def get_data(self):
+        for i in self.data:
+            yield i
+
+    def get_suggestion_id(self):
+            return self.data["id"]
 
     def add_suggestion(self, suggestionAuthor, suggestionContent):
-        suggestionData = {"_id": DBClient.get_suggestion_id(),
-                          "author": suggestionAuthor, "content": suggestionContent}
+        self.data["suggestions"].append({"id": self.get_suggestion_id(),
+                            "author": suggestionAuthor, "content": suggestionContent})
 
-        inserted = self.dataset.insert_one(suggestionData)
-        return inserted.inserted_id
+        with open(self.file_name, "w") as file:
+            json.dump(self.data, file, indent=4)
 
     def add_ping(self, pingUser):
-        self.dataset.insert_one({"_id": pingUser})
+        self.data["pings"].append(pingUser)
+        with open(self.file_name, "w") as file:
+            json.dump(self.data, file, indent=4)
 
-    def find(self, query):
-        return self.dataset.find_one(query)
+    def find(self, key, value=None):
+        if value is None:
+            return self.data[key]
+
+        for (i, x) in self.data.items():
+            if key == i and value == x:
+                return self.data[key]
 
     def clear(self):
-        self.dataset.delete_many({})
+        self.data = {}
+        with open(self.file_name, "w") as file:
+            json.dump({}, file, indent=4)
 
-    def delete(self, query):
-        self.dataset.delete_one(query)
+    def delete(self, query: dict):
+        self.data.pop(query)
 
-    def add(self, item):
-        self.dataset.insert_one(item)
+        with open(self.file_name, "w") as file:
+            json.dump(self.data, file, indent=4)
 
-    def update(self, query, new):
-        self.dataset.update_one(query, new)
+    def add(self, item: dict):
+        for key in item.keys():
+            self.data[key] = item[key]
+
+        with open(self.file_name, "w") as file:
+            json.dump(self.data, file, indent=4)
+
+    def update(self, key, value):
+        self.data[key] = value
+
+        with open(self.file_name, "w") as file:
+            json.dump(self.data, file, indent=4)

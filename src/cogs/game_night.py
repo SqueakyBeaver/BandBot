@@ -59,19 +59,25 @@ class GameNightCommands(commands.Cog, name="game night"):
 
         if (acceptRole in ctx.author.roles):
             # try:
-            acceptedInfo = self.suggestionDB.find({'_id': int(suggestionID)})
-            acceptedAuthor = ctx.guild.get_member(acceptedInfo['author'])
-            acceptedContent = acceptedInfo['content']
+            DB_data = self.suggestionDB.find('id', int(suggestionID))
 
-            if (acceptedAuthor.dm_channel is None):
-                await acceptedAuthor.create_dm()
-                await acceptedAuthor.dm_channel.send(
-                    f'Congratulations! Your suggestion {acceptedContent} was accepted!')
+            for i in DB_data:
+                if "suggestions" in i.keys():
+                    accepted_info = i
+                    break
+
+            accepted_author = ctx.guild.get_member(accepted_info['author'])
+            accepted_content = accepted_info['content']
+
+            if (accepted_author.dm_channel is None):
+                await accepted_author.create_dm()
+                await accepted_author.dm_channel.send(
+                    f'Congratulations! Your suggestion {accepted_content} was accepted!')
             else:
-                await acceptedAuthor.dm_channel.send(
-                    f'Congratulations! Your suggestion {acceptedContent} was accepted!')
+                await accepted_author.dm_channel.send(
+                    f'Congratulations! Your suggestion {accepted_content} was accepted!')
 
-            await announcementChannel.send(f'{pingRole.mention}\nWe will play ```css\n{acceptedContent}``` this {day} at {time}\n\nSuggested by {acceptedAuthor.mention}')
+            await announcementChannel.send(f'{pingRole.mention}\nWe will play ```css\n{accepted_content}``` this {day} at {time}\n\nSuggested by {accepted_author.mention}')
 
             await ctx.message.delete()
 

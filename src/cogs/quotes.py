@@ -1,15 +1,10 @@
 from discord.ext import commands, tasks
-from database import DBClient
 from datetime import datetime
 
 import asyncio
 import discord
 import wikiquote
 import random
-
-
-reminderDB = DBClient("dailyReminder")
-
 
 class QuotesCommands(commands.Cog, name="quotes"):
     """ Commands for Quotes """
@@ -27,22 +22,20 @@ class QuotesCommands(commands.Cog, name="quotes"):
     @commands.command(name='joinping',
                       aliases=['jp'],
                       description="Join the daily quote ping")
-    async def join_reminder(self, ctx):
-        if (reminderDB.find(ctx.message.author.id) is None):
-            reminderDB.add_ping(ctx.message.author.id)
-            await ctx.send("Successfully joined the daily quote ping")
-        else:
-            await ctx.send("You're already in the daily quote ping..")
+    async def join_reminder(self, ctx: commands.Context):
+        if (ctx.guild.get_role(830888283835203635) not in ctx.author.roles):
+            return await ctx.send("Successfully joined the quote of the day ping!")
+
+        await ctx.send("You're already in the quote of the day ping...")
 
     @commands.command(name='leaveping',
                       aliases=['lp'],
                       description="Leave the daily quote pinging because you don't like pings")
     async def leave_ping(self, ctx):
-        if (reminderDB.find(ctx.message.author.id) is not None):
-            reminderDB.delete({"_id": ctx.message.author.id})
-            await ctx.send("Hope you like your ping-free life")
-        else:
-            await ctx.send("You can't leave something you never joined")
+        if (ctx.guild.get_role(830888283835203635) in ctx.author.roles):
+            return await ctx.send("Hope you enjoy your ping-free life")
+
+        await ctx.send("You can't leave something you never joined")
 
     @commands.command(
         name="quote",
@@ -121,18 +114,12 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
         if datetime.now().hour == 8 and not self.pinged:
             self.pinged = True
-            pingUsers = reminderDB.dataset.find({})
-            pingStr = ""
-            quote = self.get_quotes()
+            ping_role: discord.Role = self.bot.get_guild(767843340137529394).get_role(830888283835203635)
+            quote: str = self.get_quotes()
 
-            for userID in pingUsers:
-                user = ping_channel.guild.get_member(userID["_id"])
-                pingStr += f'{user.mention}'
+            return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
 
-            await ping_channel.send(f'{pingStr}\n```\n{quote}```')
-
-        if datetime.now().hour != 8:
-            self.pinged = False
+        self.pinged = False
 
 
 def setup(bot):
