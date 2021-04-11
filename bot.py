@@ -25,7 +25,8 @@ class BotClient(commands.Bot):
             "cogs.quotes",  # Quotes commands
             "cogs.moderation",  # Moderation commands
             "cogs.help",  # Help command
-            "cogs.holidays"  # Holiday-related commands
+            "cogs.holidays",  # Holiday-related commands
+            "cogs.snipe" # The snipe commands
         ]
 
         if __name__ == '__main__':  # Ensures this is the file being run
