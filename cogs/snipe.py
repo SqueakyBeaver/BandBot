@@ -1,10 +1,11 @@
+from cogs.general import GeneralCommands
 import discord
 from discord.ext import commands
 import pytz
 from datetime import datetime
 
 
-class SnipeCommands(commands.Cog, name="sniping", command_attrs=dict(cog_name="cogs.general")):
+class SnipeCommands(commands.Cog, name="sniping", command_attrs=dict(cog_name="general")):
     """Snipe a deletion or edit"""
 
     def __init__(self, bot: commands.Bot):

@@ -7,7 +7,7 @@ import datetime
 class Help(commands.Cog):
     """Cog to handle the help command"""
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     def formatter(self, i, stack=1, ignore_hidden=False):
