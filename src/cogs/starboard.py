@@ -41,6 +41,13 @@ class Starboard(commands.Cog, name="starboard"):
 
         return e
 
+    async def find_star_message(self, message: discord.Message, star_channel: discord.TextChannel):
+        for star_message in await star_channel.history(limit=10).flatten():
+            for x in star_message.embeds:
+                for y in x.fields:
+                    if message.jump_url in y.value:
+                        return star_message
+
     @commands.command(name="starchannel")
     async def set_starboard_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         self.guilds = self.starboard_info.find("guilds")
@@ -66,7 +73,6 @@ class Starboard(commands.Cog, name="starboard"):
         self.guilds = self.starboard_info.find("guilds")
         guild_settings = self.guilds[str(payload.guild_id)]
 
-        print(guild_settings)
         channel: discord.TextChannel = self.bot.get_channel(payload.channel_id)
         message: discord.Message = await channel.fetch_message(payload.message_id)
 
@@ -75,16 +81,41 @@ class Starboard(commands.Cog, name="starboard"):
                 starred = await i.users().flatten()
 
         if id := guild_settings["channel"]:
-            star_channel = self.bot.get_channel(id)
+            star_channel: discord.TextChannel = self.bot.get_channel(id)
 
         if thresh := guild_settings["thresh"]:
-            star_thresh = thresh
+            star_thresh: int = thresh
 
         if len(message.reactions) == star_thresh:
-            return await star_channel.send(embed=self.create_star_message(message, starred))
+            await star_channel.send(embed=self.create_star_message(message, starred))
 
-        if len(message.reactions) > star_thresh:
-            return
+        if len(message.reactions) >= star_thresh:
+            to_edit: discord.Message = await self.find_star_message(message, star_channel)
+            return await to_edit.edit(embed=self.create_star_message(message, starred))
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent):
+        self.guilds = self.starboard_info.find("guilds")
+        guild_settings = self.guilds[str(payload.guild_id)]
+
+        channel: discord.TextChannel = self.bot.get_channel(payload.channel_id)
+        message: discord.Message = await channel.fetch_message(payload.message_id)
+        star_channel: discord.TextChannel = self.bot.get_channel(
+            guild_settings["channel"])
+
+        starred = []
+        for i in message.reactions:
+            if i.emoji == "\U00002B50":
+                starred = await i.users().flatten()
+
+        if len(starred) >= guild_settings["thresh"]:
+            to_edit: discord.Message = await self.find_star_message(message,
+                                                                    star_channel)
+            return await to_edit.edit(embed=self.create_star_message(message, starred))
+
+        if len(starred) + 1 == guild_settings["thresh"]:
+            to_del: discord.Message = await self.find_star_message(message, star_channel)
+            return await to_del.delete()
 
 
 def setup(bot: commands.Bot):
