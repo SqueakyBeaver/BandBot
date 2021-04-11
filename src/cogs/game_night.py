@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utilities import Utilities
+from utilities import SuggestUtilities
 from database import DBClient
 
 
@@ -9,7 +9,7 @@ class GameNightCommands(commands.Cog, name="game night"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.suggestionDB = DBClient("gameIdeas")
+        self.suggestionDB: DBClient = DBClient("gameIdeas")
 
     @commands.command(
         name='suggestgame',

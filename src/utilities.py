@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class Utilities:
+class SuggestUtilities:
     async def get_suggest_user(ctx, self, messageID):
         message = await ctx.fetch_message(messageID)
         messageContent = str(message.content)

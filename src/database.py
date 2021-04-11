@@ -2,11 +2,11 @@ import pymongo
 import os
 
 
-class DBClient:
-    def __init__(self, subname):
+class DBClient(pymongo.MongoClient):
+    def __init__(self, subname: str):
         # Not letting random people into my mongoDB cluster
         dbStr = os.environ.get("DB_STR")
-        dbClient = pymongo.MongoClient(dbStr)
+        dbClient: pymongo.MongoClient = pymongo.MongoClient(dbStr)
         info = dbClient["info"]
         table = info[subname]
         self.dataset = table
@@ -37,3 +37,9 @@ class DBClient:
 
     def delete(self, query):
         self.dataset.delete_one(query)
+
+    def add(self, item):
+        self.dataset.insert_one(item)
+
+    def update(self, query, new):
+        self.dataset.update_one(query, new)

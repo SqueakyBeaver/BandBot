@@ -1,6 +1,5 @@
-from xml.etree.ElementTree import TreeBuilder
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 import asyncio
 from datetime import datetime
 import dateparser
