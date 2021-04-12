@@ -11,7 +11,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
     def __init__(self, bot):
         bot.bg_task = self.daily_ping.start()
-        self.pinged = False
+        self.pinged: bool = False
         self.bot: commands.Bot = bot
 
     def get_quotes(self):
@@ -116,6 +116,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
             self.pinged = True
             ping_role: discord.Role = self.bot.get_guild(767843340137529394).get_role(830888283835203635)
             quote: str = self.get_quotes()
+            self.pinged = True
 
             return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
 
