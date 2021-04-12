@@ -96,7 +96,7 @@ class Starboard(commands.Cog, name="starboard"):
             print("Good")
             await star_channel.send(embed=self.create_star_message(message, starred))
 
-        if len(starred) >= star_thresh:
+        if len(starred) > star_thresh:
             to_edit: discord.Message = await self.find_star_message(message, star_channel)
             return await to_edit.edit(embed=self.create_star_message(message, starred))
 
