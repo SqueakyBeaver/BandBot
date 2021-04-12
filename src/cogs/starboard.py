@@ -73,8 +73,9 @@ class Starboard(commands.Cog, name="starboard"):
 
         await ctx.send("The amount of stars needed to get a message to the starboard is now {0}".format(thresh))
 
-    @ commands.Cog.listener()
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        print("In")
         self.guilds = self.starboard_info.find("guilds")
         guild_settings = self.guilds[str(payload.guild_id)]
 
@@ -91,10 +92,11 @@ class Starboard(commands.Cog, name="starboard"):
         if thresh := guild_settings["thresh"]:
             star_thresh: int = thresh
 
-        if len(message.reactions) == star_thresh:
+        if len(starred) == star_thresh:
+            print("Good")
             await star_channel.send(embed=self.create_star_message(message, starred))
 
-        if len(message.reactions) >= star_thresh:
+        if len(starred) >= star_thresh:
             to_edit: discord.Message = await self.find_star_message(message, star_channel)
             return await to_edit.edit(embed=self.create_star_message(message, starred))
 
