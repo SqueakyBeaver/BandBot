@@ -52,7 +52,11 @@ class Starboard(commands.Cog, name="starboard"):
     @commands.command(name="starchannel")
     async def set_starboard_channel(self, ctx: commands.Context, channel: discord.TextChannel):
         self.guilds = self.starboard_info.find("guilds")
-        self.guilds[str(ctx.guild.id)]["channel"] = channel.id
+        try:
+            self.guilds[str(ctx.guild.id)]["channel"] = channel.id
+        except:
+            self.guilds[str(ctx.guild.id)] = {}
+            self.guilds[str(ctx.guild.id)]["channel"] = channel.id
         self.starboard_info.update("guilds", self.guilds)
 
         await ctx.send("Starred messages will be sent to {0}".format(channel.mention))
