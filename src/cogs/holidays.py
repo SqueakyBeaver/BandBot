@@ -74,7 +74,7 @@ class Holidays(commands.Cog, name="holiday"):
     async def daily_holidays(self):
         await self.bot.wait_until_ready()
 
-        white_board = self.bot.get_channel(767843340137529397)
+        white_board: discord.TextChannel = self.bot.get_channel(767843340137529397)
         cst = pytz.timezone("America/Chicago")
 
         if datetime.now(cst).hour == 0 and not self.already_sent:  # Please work
@@ -82,7 +82,8 @@ class Holidays(commands.Cog, name="holiday"):
             self.already_sent = True
 
             res = self.get_holidays(dateparser.parse("today"))
-            await white_board.send(embed=res)
+            sent: discord.Message = await white_board.send(embed=res)
+            await sent.publish()
 
         if datetime.now(cst).hour != 0:
             self.already_sent = False
