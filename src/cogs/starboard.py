@@ -11,7 +11,8 @@ class Starboard(commands.Cog, name="starboard"):
         self.starboard_info: DBClient = DBClient("starboard")
         self.guilds = self.starboard_info.find("guilds")
 
-    def create_star_message(self, message: discord.Message, starred: list[discord.User]):
+    # I would use better types instead of just list, but repl.it does not like that
+    def create_star_message(self, message: discord.Message, starred: list):
         e: discord.Embed = discord.Embed(colour=discord.Colour.random(),
                                          title="A new quality message by {0}#{1}"
                                          .format(message.author.display_name,
