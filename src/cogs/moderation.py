@@ -73,37 +73,42 @@ class ModerationCommands(commands.Cog, name="moderation"):
             ret_str = await self.bulk_delete(ctx.channel, mentionedIDs, amount)
         await wait_message.edit(content=ret_str)
 
-    @commands.command(
-        name='lock',
+    @commands.group(
+        name="lock",
         description="Lock something",
     )
     # @commands.has_role("Moderator")
-    async def _lock(self, ctx, *, dest: str):
-        channels = {}
+    async def _lock(self, ctx: commands.Context):
+        if ctx.invoked_subcommand is None:
+            await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
+
+
+    @_lock.command(name="server")
+    async def server(self, ctx: commands.Context, time: int=30):
         everyone = ctx.guild.default_role
         perms = everyone.permissions
         perms.send_messages = False
+        end_time = dateparser.parse("in {0} minutes", time)
+        await everyone.edit(permissions=perms)
+        await ctx.send("Server locked")
 
-        for i in ctx.guild.text_channels:
-            channels[i.id] = i
-
-        async def server():
+        async def unlock(everyone: discord.Role, perms: discord.Permissions):
             await everyone.edit(permissions=perms)
-            await ctx.send("Server locked")
 
-        async def channel():
-            await ctx.channel.set_permissions(everyone, send_messages=False)
+    @_lock.command(name="channel")
+    async def channel(self, ctx:commands.Context, time: int=30):
+        everyone = ctx.guild.default_role
+        perms = everyone.permissions
+        perms.send_messages = False
+        end_time = dateparser.parse("in {0} minutes", time)
+        await ctx.channel.set_permissions(everyone, send_messages=False)
+        await ctx.send("Channel Locked")
 
-            # Later
-            # self.choose(ctx, ["Which channel?"], channels, Checks.is_author_channel)
-        if "channel" in dest.lower():
-            await channel()
-            return await ctx.send("Locked")
-        if "server" in dest.lower():
-            await server()
-            return await ctx.send("Locked")
+        async def unlock(channel: discord.TextChannel, everyone: discord.Role):
+            await channel.set_permissions(everyone, send_messages=None)
 
-        await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
+        await self.task(end_time, unlock, ctx.channel, everyone)
+
 
     @commands.command(
         name="unlock",
@@ -158,7 +163,7 @@ class ModerationCommands(commands.Cog, name="moderation"):
         for id in users:
             user = ctx.guild.get_member(id)
             if not muted in user.roles:
-                await ctx.send(f'{user.mention} was muted for {time}')
+                await ctx.send(f'{user.mention} was muted for {time} minutes')
             else:
                 return await ctx.send(f'{user.mention} is already muted/cannot be muted')
             await user.add_roles(muted)
