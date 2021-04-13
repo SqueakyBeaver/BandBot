@@ -112,16 +112,14 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
         ping_channel = self.bot.get_channel(767858104066637834)
 
+        self.pinged = False
+
         if datetime.now().hour == 8 and not self.pinged:
             self.pinged = True
             ping_role: discord.Role = self.bot.get_guild(767843340137529394).get_role(830888283835203635)
             quote: str = self.get_quotes()
-            self.pinged = True
 
             return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
-
-        self.pinged = False
-
 
 def setup(bot):
     bot.add_cog(QuotesCommands(bot))
