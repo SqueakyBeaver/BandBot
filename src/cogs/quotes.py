@@ -11,7 +11,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
     def __init__(self, bot):
         bot.bg_task = self.daily_ping.start()
-        self.pinged: bool = False
+        self.pinged = False
         self.bot: commands.Bot = bot
 
     def get_quotes(self):
@@ -112,7 +112,6 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
         ping_channel = self.bot.get_channel(767858104066637834)
 
-        self.pinged = False
 
         if datetime.now().hour == 8 and not self.pinged:
             self.pinged = True
@@ -120,6 +119,10 @@ class QuotesCommands(commands.Cog, name="quotes"):
             quote: str = self.get_quotes()
 
             return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
+        else:
+            self.pinged = False
+
+
 
 def setup(bot):
     bot.add_cog(QuotesCommands(bot))
