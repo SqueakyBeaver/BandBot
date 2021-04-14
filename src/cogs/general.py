@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime
 import pytz
 
@@ -98,6 +98,14 @@ class GeneralCommands(commands.Cog, name="general"):
                          icon_url="https://i.redd.it/k9wl9ypumyp31.png")
 
         await ctx.send(ctx.author.mention, embed=embed)
+
+    @tasks.loop(minutes=1)
+    async def be_annoying(self):
+        channel: discord.TextChannel = self.bot.get_channel(767858104066637834)
+        user: discord.User = self.bot.get_user(665018712046174228)
+        await self.bot.wait_until_ready()
+        if datetime.now(tz=pytz.timezone("America/Chicago")).minute % 30 == 0:
+            await channel.send("There are no monkes in Africa, {0}".format(user.mention))
 
 
 def setup(bot):
