@@ -119,7 +119,8 @@ class QuotesCommands(commands.Cog, name="quotes"):
             quote: str = self.get_quotes()
 
             return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
-        else:
+            
+        if datetime.now().hour != 8:
             self.pinged = False
 
 
