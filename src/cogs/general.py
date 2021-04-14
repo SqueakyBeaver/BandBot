@@ -8,7 +8,9 @@ class GeneralCommands(commands.Cog, name="general"):
     """ General commands """
 
     def __init__(self, bot):
+        bot.annoying_task = self.be_annoying.start()
         self.bot = bot
+
 
         # Channel: message
         self.deleted_messages: dict[discord.TextChannel, discord.Message] = {}
