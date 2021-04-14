@@ -105,7 +105,7 @@ class GeneralCommands(commands.Cog, name="general"):
         user: discord.User = self.bot.get_user(665018712046174228)
         await self.bot.wait_until_ready()
         if datetime.now(tz=pytz.timezone("America/Chicago")).minute % 30 == 0:
-            await channel.send("There are no monkes in Africa, {0}".format(user.mention))
+            await channel.send("There are no monkes in Africa, {0}\nSource: https://en.wikipedia.org/wiki/Monkeys_in_Africa".format(user.mention))
 
 
 def setup(bot):
