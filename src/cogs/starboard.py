@@ -59,7 +59,7 @@ class Starboard(commands.Cog, name="starboard"):
             self.guilds[str(ctx.guild.id)]["channel"] = channel.id
         self.starboard_info.update("guilds", self.guilds)
 
-        await ctx.send("Starred messages will be sent to {0}".format(channel.mention))
+        await ctx.reply("Starred messages will be sent to {0}".format(channel.mention))
 
     @commands.command(name="starthresh",
                       aliases=["staramount"]
@@ -71,7 +71,7 @@ class Starboard(commands.Cog, name="starboard"):
 
         self.starboard_info.update("guilds", self.guilds)
 
-        await ctx.send("The amount of stars needed to get a message to the starboard is now {0}".format(thresh))
+        await ctx.reply("The amount of stars needed to get a message to the starboard is now {0}".format(thresh))
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

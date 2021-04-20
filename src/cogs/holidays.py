@@ -1,11 +1,12 @@
-from cgitb import reset
-import requests
-from bs4 import BeautifulSoup
+from database import DBClient
+from datetime import datetime
 from discord.ext import commands, tasks
+from bs4 import BeautifulSoup
+
+import requests
 import discord
 import pytz
 import dateparser
-from datetime import datetime
 
 
 class Holidays(commands.Cog, name="holiday"):
@@ -13,8 +14,9 @@ class Holidays(commands.Cog, name="holiday"):
 
     def __init__(self, bot):
         bot.daily_holidays_loop = self.daily_holidays.start()
-        self.already_sent = False
         self.bot = bot
+        self.holiday_info: DBClient = DBClient("daily")
+        self.guilds = self.holiday_info.find("quotes")["guilds"]
 
     def get_holidays(self, date):
         link = f"https://www.checkiday.com/{date.month}/{date.day}/{date.year}"
@@ -40,7 +42,7 @@ class Holidays(commands.Cog, name="holiday"):
             sep = i.split('/')
 
             if "timeanddate.com" in i:
-                if len(desc_str +  f"\n**- On This Day in History**\n[Learn More]({i})\n") < 2048:
+                if len(desc_str + f"\n**- On This Day in History**\n[Learn More]({i})\n") < 2048:
                     desc_str += f"\n**- On This Day in History**\n[Learn More]({i})\n"
                 continue
             if len(desc_str + f"\n**- {sep[-1].replace('-', ' ').title()}**\n[Learn More]({i})\n") < 2048:
@@ -60,33 +62,50 @@ class Holidays(commands.Cog, name="holiday"):
         description="Get holidays for a specific date.",
         aliases=["h"]
     )
-    async def _holidays(self, ctx, *, day):
+    async def _holidays(self, ctx: commands.Context, *, day: str):
         date = dateparser.parse(day)
 
         res = self.get_holidays(date)
 
         if res is None:
-            return await ctx.send(f"{ctx.author.mention} No results found :(")
+            return await ctx.reply(f"{ctx.author.mention} No results found :(")
 
-        await ctx.send(ctx.author.mention, embed=res)
+        await ctx.reply(ctx.author.mention, embed=res)
 
     @tasks.loop(minutes=1)
     async def daily_holidays(self):
         await self.bot.wait_until_ready()
 
-        white_board: discord.TextChannel = self.bot.get_channel(767843340137529397)
-        cst = pytz.timezone("America/Chicago")
+        for i in self.guilds.values():
+            try:
+                tz = pytz.timezone(i["tz"])
 
-        if datetime.now(cst).hour == 0 and not self.already_sent:  # Please work
-            print("In")  # Debugging
-            self.already_sent = True
+                if datetime.now(tz).hour == 0 and not i:  # Please work
+                    i = True
 
-            res = self.get_holidays(dateparser.parse("today"))
-            sent: discord.Message = await white_board.send(embed=res)
-            await sent.publish()
+                    send_to: discord.TextChannel = self.bot.get_channel(
+                        i["channel"])
 
-        if datetime.now(cst).hour != 0:
-            self.already_sent = False
+                    res = self.get_holidays(dateparser.parse("today"))
+                    sent: discord.Message = await send_to.send(embed=res)
+                    await sent.publish()
+
+                if datetime.now(tz).hour != 0:
+                    i = False
+            except:
+                continue
+
+    @commands.command(name="timezone",
+                      aliases=["tz"])
+    async def _timezone(self, ctx: commands.Context, tz: str):
+        self.guilds[str(ctx.guild)]["tz"] = tz
+        self.holiday_info.update("guilds", self.guilds)
+
+    @commands.group(name="holiday")
+    async def _holiday_group(self, ctx: commands.Context, *, args):
+        if ctx.invoked_subcommand == None:
+            await self._holidays(ctx, args)
+
 
 
 def setup(bot):

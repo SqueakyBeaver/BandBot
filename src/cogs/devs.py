@@ -32,13 +32,13 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
             for extension in extensions:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
-            await ctx.send("Done")
+            await ctx.reply("Done")
         if cog in extensions:
             self.bot.unload_extension(cog)  # Unloads the cog
             self.bot.load_extension(cog)  # Loads the cog
-            await ctx.send("Done")  # Sends a message where content="Done"
+            await ctx.reply("Done")  # Sends a message where content="Done"
         else:
-            await ctx.send("Unknown Cog")  # If the cog isn't found/loaded.
+            await ctx.reply("Unknown Cog")  # If the cog isn't found/loaded.
 
     @commands.command(
         name="unload",
@@ -50,10 +50,10 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         """
         extensions = self.bot.extensions
         if cog not in extensions:
-            await ctx.send("Cog is not loaded!")
+            await ctx.reply("Cog is not loaded!")
             return
         self.bot.unload_extension(cog)
-        await ctx.send("`{cog}` has successfully been unloaded.")
+        await ctx.reply("`{cog}` has successfully been unloaded.")
 
     @commands.command(
         name="load"
@@ -65,10 +65,10 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         try:
 
             self.bot.load_extension(cog)
-            await ctx.send(f"`{cog}` has successfully been loaded.")
+            await ctx.reply(f"`{cog}` has successfully been loaded.")
 
         except commands.errors.ExtensionNotFound:
-            await ctx.send(f"`{cog}` does not exist!")
+            await ctx.reply(f"`{cog}` does not exist!")
 
     @commands.command(
         name="listcogs",
@@ -82,7 +82,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         base_string = "```css\n"
         base_string += "\n".join([str(cog) for cog in self.bot.extensions])
         base_string += "\n```"
-        await ctx.send(base_string)
+        await ctx.reply(base_string)
 
     def cleanup_code(self, content):
         """Cleanup for code block inputs"""
@@ -97,7 +97,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         content = content.replace("```", "\n```").strip()
         if content.startswith("```py\n"):
             return {"blocks": True,
-            "res": "\n".join(content.split("\n")[1:-1])}
+                    "res": "\n".join(content.split("\n")[1:-1])}
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True, name="eval")
@@ -119,7 +119,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         cleaned = self.cleanup_code(body)
 
         if not cleaned["blocks"]:
-            return await ctx.send(cleaned["res"])
+            return await ctx.reply(cleaned["res"])
 
         body = cleaned["res"]
 
@@ -131,7 +131,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
             exec(to_compile, env)
         except Exception as e:
             print(e)
-            return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
+            return await ctx.reply(f"```py\n{e.__class__.__name__}: {e}\n```")
 
         func = env["func"]
         try:
@@ -139,14 +139,14 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
+            await ctx.reply(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
             value = stdout.getvalue()
 
             await ctx.message.add_reaction("\u2705")
 
             if value:
-                await ctx.send(f"```py\n{value}\n```")
+                await ctx.reply(f"```py\n{value}\n```")
 
 
 def setup(bot):

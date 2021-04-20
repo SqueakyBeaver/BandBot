@@ -23,22 +23,22 @@ class GeneralCommands(commands.Cog, name="general"):
         name='ping',
         aliases=['poing']
     )
-    async def ping(self, ctx):
-        await ctx.send(f'{ctx.message.author.mention} **PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond')
+    async def ping(self, ctx: commands.Context):
+        await ctx.reply(f'**PONG!**\nI took `{round(self.bot.latency * 1000)} ms` to respond')
 
     @commands.command(
         name='feedback',
         aliases=['fb'],
         decription="Send feedback to the dev(s)")
-    async def bug(self, ctx, *args):
+    async def bug(self, ctx: commands.Context, *args):
         if (len(args) == 0):
-            await ctx.send("Type `!fb <your feedback>`")
+            await ctx.reply("Type `!fb <your feedback>`")
             return
         else:
             feedbackChannel = self.bot.get_channel(779738194097995806)
             await feedbackChannel.send(f'**FEEDBACK**\n{ctx.author.id} (**{ctx.message.author.name}#{ctx.message.author.discriminator}**) says ```css\n{" ".join(args)}```')
             await ctx.message.delete()
-            await ctx.send("Thank you for that")
+            await ctx.reply("Thank you for that")
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -60,7 +60,7 @@ class GeneralCommands(commands.Cog, name="general"):
                    aliases=["delete"])
     async def snipe_deletion(self, ctx: commands.Context):
         if ctx.channel not in self.deleted_messages:
-            return await ctx.send("There were no deletions that I could see.\n"
+            return await ctx.reply("There were no deletions that I could see.\n"
                                   "Better luck next time.")
 
         embed: discord.Embed = discord.Embed(colour=discord.Colour.green(),
@@ -75,12 +75,12 @@ class GeneralCommands(commands.Cog, name="general"):
                                                                    ctx.author.discriminator, datetime.strftime(datetime.now(pytz.timezone("US/Central")), "%H:%M:%S")),
                          icon_url="https://i.redd.it/k9wl9ypumyp31.png")
 
-        await ctx.send(ctx.author.mention, embed=embed)
+        await ctx.reply(ctx.author.mention, embed=embed)
 
     @snipe.command(name="edit")
     async def snipe_edit(self, ctx):
         if ctx.channel not in self.edited_messages:
-            return await ctx.send("There were no edits that I can see.\n"
+            return await ctx.reply("There were no edits that I can see.\n"
                                   "Better luck next time.")
 
         embed: discord.Embed = discord.Embed(colour=discord.Colour.green(),
@@ -99,7 +99,7 @@ class GeneralCommands(commands.Cog, name="general"):
                                                                    ctx.author.discriminator, datetime.strftime(datetime.now(pytz.timezone("US/Central")), "%H:%M:%S")),
                          icon_url="https://i.redd.it/k9wl9ypumyp31.png")
 
-        await ctx.send(ctx.author.mention, embed=embed)
+        await ctx.reply(ctx.author.mention, embed=embed)
 
     @tasks.loop(minutes=1)
     async def be_annoying(self):

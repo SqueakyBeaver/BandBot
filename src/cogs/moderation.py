@@ -30,10 +30,10 @@ class ModerationCommands(commands.Cog, name="moderation"):
     async def choose(self, ctx, choices, res, check=Checks.is_author):
         try:
             for i in choices:
-                await ctx.send(i)
+                await ctx.reply(i)
                 answer = await self.bot.wait_for('message', check=check, timeout=30)
         except asyncio.TimeoutError:
-            return await ctx.send("You took too long, stupid slow human")
+            return await ctx.reply("You took too long, stupid slow human")
         if res[answer]:
             return res[answer]
 
@@ -66,7 +66,7 @@ class ModerationCommands(commands.Cog, name="moderation"):
     )
     @commands.has_permissions(manage_messages=True)
     async def _purge(self, ctx, amount=100):
-        wait_message = await ctx.send("Working, please allow some time.")
+        wait_message = await ctx.reply("Working, please allow some time.")
         async with ctx.channel.typing():
             mentionedIDs = ctx.message.raw_mentions
             await ctx.message.delete()
@@ -80,35 +80,33 @@ class ModerationCommands(commands.Cog, name="moderation"):
     # @commands.has_role("Moderator")
     async def _lock(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
-            await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
-
+            await ctx.reply("Invalid option. Options are: **`Server`** or **`Channel`**")
 
     @_lock.command(name="server")
-    async def server(self, ctx: commands.Context, time: int=30):
+    async def server(self, ctx: commands.Context, time: int = 30):
         everyone = ctx.guild.default_role
         perms = everyone.permissions
         perms.send_messages = False
         end_time = dateparser.parse("in {0} minutes", time)
         await everyone.edit(permissions=perms)
-        await ctx.send("Server locked")
+        await ctx.reply("Server locked")
 
         async def unlock(everyone: discord.Role, perms: discord.Permissions):
             await everyone.edit(permissions=perms)
 
     @_lock.command(name="channel")
-    async def channel(self, ctx:commands.Context, time: int=30):
+    async def channel(self, ctx: commands.Context, time: int = 30):
         everyone = ctx.guild.default_role
         perms = everyone.permissions
         perms.send_messages = False
         end_time = dateparser.parse("in {0} minutes", time)
         await ctx.channel.set_permissions(everyone, send_messages=False)
-        await ctx.send("Channel Locked")
+        await ctx.reply("Channel Locked")
 
         async def unlock(channel: discord.TextChannel, everyone: discord.Role):
             await channel.set_permissions(everyone, send_messages=None)
 
         await self.task(end_time, unlock, ctx.channel, everyone)
-
 
     @commands.command(
         name="unlock",
@@ -134,12 +132,12 @@ class ModerationCommands(commands.Cog, name="moderation"):
             # self.choose(ctx, ["Which channel?"], channels, Checks.is_author_channel)
         if "channel" in dest.lower():
             await channel()
-            return await ctx.send("Unlocked")
+            return await ctx.reply("Unlocked")
         if "server" in dest.lower():
             await server()
-            return await ctx.send("Unlocked")
+            return await ctx.reply("Unlocked")
 
-        await ctx.send("Invalid option. Options are: **`Server`** or **`Channel`**")
+        await ctx.reply("Invalid option. Options are: **`Server`** or **`Channel`**")
 
     @commands.command(
         name="mute",
@@ -152,7 +150,7 @@ class ModerationCommands(commands.Cog, name="moderation"):
 
         end_time = dateparser.parse("in " + time)
         if not end_time or end_time < datetime.now():
-            return await ctx.send("Invalid time!")
+            return await ctx.reply("Invalid time!")
 
         muted = discord.utils.get(ctx.message.guild.roles, name="Muted")
         if (muted is None):
@@ -163,9 +161,9 @@ class ModerationCommands(commands.Cog, name="moderation"):
         for id in users:
             user = ctx.guild.get_member(id)
             if not muted in user.roles:
-                await ctx.send(f'{user.mention} was muted for {time} minutes')
+                await ctx.reply(f'{user.mention} was muted for {time} minutes')
             else:
-                return await ctx.send(f'{user.mention} is already muted/cannot be muted')
+                return await ctx.reply(f'{user.mention} is already muted/cannot be muted')
             await user.add_roles(muted)
 
         async def __unmute(guild, users):
@@ -191,9 +189,9 @@ class ModerationCommands(commands.Cog, name="moderation"):
             user = ctx.guild.get_member(id)
             if muted in user.roles:
                 await user.remove_roles(muted, reason="Unmured")
-                await ctx.send(f'{user.mention} was unmuted')
+                await ctx.reply(f'{user.mention} was unmuted')
             else:
-                await ctx.send(f'{user.mention} is not muted')
+                await ctx.reply(f'{user.mention} is not muted')
 
 
 def setup(bot):

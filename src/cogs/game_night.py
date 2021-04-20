@@ -42,7 +42,7 @@ class GameNightCommands(commands.Cog, name="game night"):
     async def choose_game(self, ctx, suggestionID: int, time: str = "7:00 PM", day: str = "Saturday"):
         if (not await self.bot.is_owner(ctx.message.author)):
             print(ctx.message.author.id)
-            await ctx.send("No")
+            await ctx.reply("No")
             return
 
         if (ctx.guild.id == 637316662801989658):
@@ -82,7 +82,7 @@ class GameNightCommands(commands.Cog, name="game night"):
             await ctx.message.delete()
 
             # except:
-            #    await ctx.send("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
+            #    await ctx.reply("Either you did something stupid or I messed up.\nIf you think you did nothing wrong, type b!bug")
             #    return
 
     @ commands.command(
@@ -91,14 +91,14 @@ class GameNightCommands(commands.Cog, name="game night"):
     )
     async def join_game_night(self, ctx):
         if (ctx.guild.get_role(779749274773749870) in ctx.author.roles):
-            await ctx.send("Stop trying to break me")
+            await ctx.reply("Stop trying to break me")
             return
         else:
             try:
                 await ctx.author.add_roles(discord.Object(779749274773749870), reason="This is a cool person")
-                await ctx.send("Success!")
+                await ctx.reply("Success!")
             except:
-                await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
+                await ctx.reply("Something went wrong. Either do the thing right or type `b!bug`")
 
     @ commands.command(
         name='leave',
@@ -110,9 +110,9 @@ class GameNightCommands(commands.Cog, name="game night"):
             await ctx.message.delete()
         try:
             await ctx.author.remove_roles(discord.Object(779749274773749870), reason="Doesn't like ping, I guess")
-            await ctx.send("Success")
+            await ctx.reply("Success")
         except:
-            await ctx.send("Something went wrong. Either do the thing right or type `b!bug`")
+            await ctx.reply("Something went wrong. Either do the thing right or type `b!bug`")
 
     @ commands.command(
         name='resetsuggestions',
@@ -131,7 +131,7 @@ class GameNightCommands(commands.Cog, name="game night"):
             self.suggestionDB.clear()
             with open("suggestionID.txt", 'w') as f:
                 f.write("1\n")
-                await ctx.send("Reset suggestions")
+                await ctx.reply("Reset suggestions")
 
 
 def setup(bot):

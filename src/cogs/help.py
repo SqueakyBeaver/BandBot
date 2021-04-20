@@ -66,22 +66,23 @@ class Help(commands.Cog):
             join = "".join(n)
             if len(join) < 2048:
                 embed.description = join
-                await ctx.send(embed=embed)
+                await ctx.reply(embed=embed)
             else:
                 try:
                     await ctx.author.send("")
                 except discord.Forbidden:
-                    return await ctx.send("Cannot DM you!")
+                    return await ctx.reply("Cannot DM you!")
                 except discord.HTTPException:
                     pass
                 await ctx.message.add_reaction("\U0001f4ec")
                 for chunk in [n[x:x+25] for x in range(0, len(n), 25)]:
                     await ctx.author.send("".join(chunk))
         else:
-            item = self.bot.get_cog(cmd.lower()) or self.bot.get_command(cmd.lower())
+            item = self.bot.get_cog(
+                cmd.lower()) or self.bot.get_command(cmd.lower())
             if not item:
-                return await ctx.send(f"Couldn't find any cog/command named '{cmd}'.")
-            await ctx.send(embed=self.format_help_for(item))
+                return await ctx.reply(f"Couldn't find any cog/command named '{cmd}'.")
+            await ctx.reply(embed=self.format_help_for(item))
 
 
 def setup(bot):
