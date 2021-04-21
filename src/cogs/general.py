@@ -101,13 +101,13 @@ class GeneralCommands(commands.Cog, name="general"):
 
         await ctx.reply(ctx.author.mention, embed=embed)
 
-    @tasks.loop(minutes=1)
-    async def be_annoying(self):
-        channel: discord.TextChannel = self.bot.get_channel(767858104066637834)
-        user: discord.User = self.bot.get_user(665018712046174228)
-        await self.bot.wait_until_ready()
-        if datetime.now(tz=pytz.timezone("America/Chicago")).minute % 30 == 0:
-            await channel.send("There are no monkes in Africa, {0}\nSource: https://en.wikipedia.org/wiki/Monkeys_in_Africa".format(user.mention))
+    # @tasks.loop(minutes=1)
+    # async def be_annoying(self):
+    #     channel: discord.TextChannel = self.bot.get_channel(767858104066637834)
+    #     user: discord.User = self.bot.get_user(665018712046174228)
+    #     await self.bot.wait_until_ready()
+    #     if datetime.now(tz=pytz.timezone("America/Chicago")).minute % 30 == 0:
+    #         await channel.send("There are no monkes in Africa, {0}\nSource: https://en.wikipedia.org/wiki/Monkeys_in_Africa".format(user.mention))
 
 
 def setup(bot):
