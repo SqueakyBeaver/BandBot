@@ -49,29 +49,7 @@ class Starboard(commands.Cog, name="starboard"):
                     if message.jump_url in y.value:
                         return star_message
 
-    @commands.command(name="starchannel")
-    async def set_starboard_channel(self, ctx: commands.Context, channel: discord.TextChannel):
-        self.guilds = self.starboard_info.find("guilds")
-        try:
-            self.guilds[str(ctx.guild.id)]["channel"] = channel.id
-        except:
-            self.guilds[str(ctx.guild.id)] = {}
-            self.guilds[str(ctx.guild.id)]["channel"] = channel.id
-        self.starboard_info.update("guilds", self.guilds)
-
-        await ctx.reply("Starred messages will be sent to {0}".format(channel.mention))
-
-    @commands.command(name="starthresh",
-                      aliases=["staramount"]
-                      )
-    async def set_star_thresh(self, ctx: commands.Context, thresh: int):
-        self.guilds = self.starboard_info.find("guilds")
-
-        self.guilds[str(ctx.guild.id)]["thresh"] = thresh
-
-        self.starboard_info.update("guilds", self.guilds)
-
-        await ctx.reply("The amount of stars needed to get a message to the starboard is now {0}".format(thresh))
+    
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):

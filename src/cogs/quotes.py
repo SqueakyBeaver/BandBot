@@ -15,7 +15,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
         bot.bg_task = self.daily_ping.start()
         self.bot: commands.Bot = bot
         self.quote_info: DBClient = DBClient("daily")
-        self.guilds = self.quote_info.find("quotes")["guilds"]
+        self.guilds = self.quote_info.find("guilds")
         print(self.guilds)
 
     def get_quotes(self):

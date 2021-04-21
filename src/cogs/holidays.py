@@ -16,7 +16,7 @@ class Holidays(commands.Cog, name="holiday"):
         bot.daily_holidays_loop = self.daily_holidays.start()
         self.bot = bot
         self.holiday_info: DBClient = DBClient("daily")
-        self.guilds = self.holiday_info.find("quotes")["guilds"]
+        self.guilds = self.holiday_info.find("guilds")
 
     def get_holidays(self, date):
         link = f"https://www.checkiday.com/{date.month}/{date.day}/{date.year}"
@@ -95,11 +95,6 @@ class Holidays(commands.Cog, name="holiday"):
             except:
                 continue
 
-    @commands.command(name="timezone",
-                      aliases=["tz"])
-    async def _timezone(self, ctx: commands.Context, tz: str):
-        self.guilds[str(ctx.guild)]["tz"] = tz
-        self.holiday_info.update("guilds", self.guilds)
 
     @commands.group(name="holiday")
     async def _holiday_group(self, ctx: commands.Context, *, args):
