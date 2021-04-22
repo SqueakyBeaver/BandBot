@@ -15,7 +15,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
         bot.bg_task = self.daily_ping.start()
         self.bot: commands.Bot = bot
         self.quote_info: DBClient = DBClient("daily")
-        self.guilds = self.quote_info.find("guilds")
+        self.guilds: dict = self.quote_info.find("guilds")
         print(self.guilds)
 
     def get_quotes(self):
@@ -113,21 +113,21 @@ class QuotesCommands(commands.Cog, name="quotes"):
     async def daily_ping(self):
         await self.bot.wait_until_ready()
 
-        for i in self.guilds.values():
-            if datetime.now().hour == 8 and not i["sent"]:
-                i["sent"] = True
+        for (key, value) in self.guilds.items():
+            if datetime.now().hour == 8 and not value["sent"]:
+                value["sent"] = True
 
                 ping_role: discord.Role = self.bot.get_guild(
-                    int(i)).get_role(i["role"])
+                    int(key)).get_role(value["role"])
 
-                ping_channel: discord.TextChannel = self.bot.get_channel(i["channel"])
+                ping_channel: discord.TextChannel = self.bot.get_channel(value["channel"])
 
                 quote: str = self.get_quotes()
 
                 return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
 
             if datetime.now().hour != 8:
-                i["sent"] = False
+                value["sent"] = False
 
         self.quote_info.update("guilds", self.guilds)
 

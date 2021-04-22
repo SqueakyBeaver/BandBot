@@ -76,22 +76,22 @@ class Holidays(commands.Cog, name="holiday"):
     async def daily_holidays(self):
         await self.bot.wait_until_ready()
 
-        for i in self.guilds.values():
+        for (key, value) in self.guilds.items():
             try:
-                tz = pytz.timezone(i["tz"])
+                tz = pytz.timezone(value["tz"])
 
-                if datetime.now(tz).hour == 0 and not i:  # Please work
-                    i = True
+                if datetime.now(tz).hour == 0 and not value["sent"]:  # Please work
+                    value["sent"] = True
 
                     send_to: discord.TextChannel = self.bot.get_channel(
-                        i["channel"])
+                        value["channel"])
 
                     res = self.get_holidays(dateparser.parse("today"))
                     sent: discord.Message = await send_to.send(embed=res)
                     await sent.publish()
 
                 if datetime.now(tz).hour != 0:
-                    i = False
+                    value["sent"] = False
             except:
                 continue
 
