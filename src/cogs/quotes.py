@@ -6,6 +6,7 @@ import asyncio
 import discord
 import wikiquote
 import random
+import pytz
 
 
 class QuotesCommands(commands.Cog, name="quotes"):
@@ -112,9 +113,9 @@ class QuotesCommands(commands.Cog, name="quotes"):
     @tasks.loop(minutes=1)
     async def daily_ping(self):
         await self.bot.wait_until_ready()
-
         for i in self.guilds.values():
-            if datetime.now().hour == 8 and not i["sent"]:
+
+            if datetime.now(pytz.timezone(i["tz"])).hour == 0 and not i["sent"]:
                 i["sent"] = True
 
                 ping_role: discord.Role = self.bot.get_guild(

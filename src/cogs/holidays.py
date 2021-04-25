@@ -80,8 +80,8 @@ class Holidays(commands.Cog, name="holiday"):
             try:
                 tz = pytz.timezone(i["tz"])
 
-                if datetime.now(tz).hour == 0 and not i:  # Please work
-                    i = True
+                if datetime.now(tz).hour == 0 and not i["sent"]:  # Please work
+                    i["sent"] = True
 
                     send_to: discord.TextChannel = self.bot.get_channel(
                         i["channel"])
@@ -91,7 +91,7 @@ class Holidays(commands.Cog, name="holiday"):
                     await sent.publish()
 
                 if datetime.now(tz).hour != 0:
-                    i = False
+                    i["sent"] = False
             except:
                 continue
 
