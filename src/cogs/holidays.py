@@ -13,10 +13,7 @@ class Holidays(commands.Cog, name="holiday"):
     """ Commands to find holidays from checkiday.com """
 
     def __init__(self, bot):
-        bot.daily_holidays_loop = self.daily_holidays.start()
         self.bot = bot
-        self.holiday_info: DBClient = DBClient("daily")
-        self.guilds = self.holiday_info.find("guilds")
 
     def get_holidays(self, date):
         link = f"https://www.checkiday.com/{date.month}/{date.day}/{date.year}"
@@ -72,28 +69,6 @@ class Holidays(commands.Cog, name="holiday"):
 
         await ctx.reply(ctx.author.mention, embed=res)
 
-    @tasks.loop(minutes=1)
-    async def daily_holidays(self):
-        await self.bot.wait_until_ready()
-
-        for (key, value) in self.guilds.items():
-            try:
-                tz = pytz.timezone(value["tz"])
-
-                if datetime.now(tz).hour == 0 and not value["sent"]:  # Please work
-                    value["sent"] = True
-
-                    send_to: discord.TextChannel = self.bot.get_channel(
-                        value["channel"])
-
-                    res = self.get_holidays(dateparser.parse("today"))
-                    sent: discord.Message = await send_to.send(embed=res)
-                    await sent.publish()
-
-                if datetime.now(tz).hour != 0:
-                    value["sent"] = False
-            except:
-                continue
 
 
     @commands.group(name="holiday")

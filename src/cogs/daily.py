@@ -11,6 +11,7 @@ import pytz
 class Daily(commands.Cog, name="daily"):
     def __init__(self, bot: commands.Bot):
         bot.bg_task = self.daily_message.start()
+        bot.update_info = self.update.start()
         self.bot: commands.Bot = bot
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
@@ -23,6 +24,11 @@ class Daily(commands.Cog, name="daily"):
             ping_role: discord.Role = self.bot.get_guild(
                 int(key)).get_role(value["role"])
         await ctx.reply(content=self.daily_quotes(ping_role), embed=self.daily_holidays())
+
+    @tasks.loop(minutes=2)
+    async def update(self):
+        self.info: DBClient = DBClient("daily")
+        self.guilds: dict = self.info.find("guilds")
 
     @tasks.loop(minutes=1)
     async def daily_message(self):
@@ -41,8 +47,8 @@ class Daily(commands.Cog, name="daily"):
                 value["sent"] = False
                 print("Not sent at {0}".format(datetime.now(pytz.timezone("America/Chicago"))))
 
-            # If it hasn't been sent and the time is after 00:00, then send it
-            elif datetime.now(guild_tz) == 0 and value["sent"] == False:
+            # If it is the time to send it and it hasn't been sent today, send it
+            elif datetime.now(guild_tz) == 0 and last_sent < dateparser.parse("Today at 0:00"):
                 tmp_msg: discord.Message = await announcement_channel.send(self.daily_holidays())
                 await tmp_msg.publish()
                 await announcement_channel.send(self.daily_quotes(ping_role))

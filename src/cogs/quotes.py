@@ -12,10 +12,7 @@ class QuotesCommands(commands.Cog, name="quotes"):
     """ Commands for Quotes """
 
     def __init__(self, bot):
-        bot.bg_task = self.daily_ping.start()
         self.bot: commands.Bot = bot
-        self.quote_info: DBClient = DBClient("daily")
-        self.guilds: dict = self.quote_info.find("guilds")
         print(self.guilds)
 
     def get_quotes(self):
@@ -108,28 +105,6 @@ class QuotesCommands(commands.Cog, name="quotes"):
                       )
     async def _qotd(self, ctx):
         return await ctx.reply(f'{ctx.author.mention}\n{self.get_quotes()[0]}')
-
-    @tasks.loop(minutes=1)
-    async def daily_ping(self):
-        await self.bot.wait_until_ready()
-
-        for (key, value) in self.guilds.items():
-            if datetime.now().hour == 8 and not value["sent"]:
-                value["sent"] = True
-
-                ping_role: discord.Role = self.bot.get_guild(
-                    int(key)).get_role(value["role"])
-
-                ping_channel: discord.TextChannel = self.bot.get_channel(value["channel"])
-
-                quote: str = self.get_quotes()
-
-                return await ping_channel.send("{0}\n```\n{1}```".format(ping_role.mention, quote))
-
-            if datetime.now().hour != 8:
-                value["sent"] = False
-
-        self.quote_info.update("guilds", self.guilds)
 
 
 def setup(bot):
