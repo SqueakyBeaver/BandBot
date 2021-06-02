@@ -23,7 +23,7 @@ class Holidays(commands.Cog, name="holiday"):
 
         try:
             site = requests.get(link)
-        except Exception as e:
+        except Exception:
             return
 
         soup = BeautifulSoup(site.content, "html.parser")
