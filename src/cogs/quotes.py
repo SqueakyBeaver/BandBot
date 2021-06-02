@@ -13,7 +13,6 @@ class QuotesCommands(commands.Cog, name="quotes"):
 
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        print(self.guilds)
 
     def get_quotes(self):
         daily_quote = wikiquote.quote_of_the_day()
