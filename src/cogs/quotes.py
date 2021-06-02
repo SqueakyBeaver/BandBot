@@ -6,7 +6,6 @@ import asyncio
 import discord
 import wikiquote
 import random
-import pytz
 
 
 class QuotesCommands(commands.Cog, name="quotes"):

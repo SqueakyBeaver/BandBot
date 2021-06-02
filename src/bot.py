@@ -14,7 +14,8 @@ class BotClient(commands.Bot):
                          command_prefix="b!",  # Change to desired prefix
                          case_insensitive=True,  # Commands aren't case-sensitive
                          intents=intents,  # Discord has to be annoying
-                         owner_id=557273716782923820  # I own the bot
+                         owner_id=557273716782923820,  # I own the bot
+                         activity=discord.Activity(type=discord.ActivityType.watching, name="All of You")
                          )
         extensions = [
             "cogs.devs",  # Commands for devs only
@@ -25,7 +26,8 @@ class BotClient(commands.Bot):
             "cogs.help",  # Help command
             "cogs.holidays",  # Holiday-related commands
             "cogs.starboard", # Starboard commands
-            "cogs.config" # Finally, some config
+            "cogs.config", # Finally, some config
+            "cogs.daily" # Took me long enough, eh?
         ]
 
         if __name__ == '__main__':  # Ensures this is the file being run

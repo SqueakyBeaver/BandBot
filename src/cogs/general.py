@@ -130,7 +130,5 @@ class GeneralCommands(commands.Cog, name="general"):
 
         await ctx.reply("Done")
 
-
-
 def setup(bot):
     bot.add_cog(GeneralCommands(bot))
