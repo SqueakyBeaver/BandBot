@@ -107,26 +107,26 @@ class GeneralCommands(commands.Cog, name="general"):
         roles = {"raisins": guild.get_role(827239098804469780), "senior": guild.get_role(769201494821306368), "junior": guild.get_role(769201510801211452),
                  "sophomore": guild.get_role(769201512227667999), "freshman": guild.get_role(769201513603137566), "middle school": guild.get_role(769201975346200606)}
 
-        await ctx.typing()
-        for user in ctx.guild.members:
-            if user.bot:
-                continue
+        async with ctx.typing():
+            for user in ctx.guild.members:
+                if user.bot:
+                    continue
 
-            if roles["senior"] in user.roles:
-                await user.remove_roles(roles["senior"])
-                await user.add_roles(roles["raisins"])
+                if roles["senior"] in user.roles:
+                    await user.remove_roles(roles["senior"])
+                    await user.add_roles(roles["raisins"])
 
-            if roles["junior"] in user.roles:
-                await user.remove_roles(roles["junior"])
-                await user.add_roles(roles["senior"])
+                if roles["junior"] in user.roles:
+                    await user.remove_roles(roles["junior"])
+                    await user.add_roles(roles["senior"])
 
-            if roles["sophomore"] in user.roles:
-                await user.remove_roles(roles["sophomore"])
-                await user.add_roles(roles["junior"])
+                if roles["sophomore"] in user.roles:
+                    await user.remove_roles(roles["sophomore"])
+                    await user.add_roles(roles["junior"])
 
-            if roles["freshman"] in user.roles:
-                await user.remove_roles(roles["freshman"])
-                await user.add_roles(roles["sophomore"])
+                if roles["freshman"] in user.roles:
+                    await user.remove_roles(roles["freshman"])
+                    await user.add_roles(roles["sophomore"])
 
         await ctx.reply("Done")
 
