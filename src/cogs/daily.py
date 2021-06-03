@@ -10,8 +10,8 @@ import pytz
 
 class Daily(commands.Cog, name="daily"):
     def __init__(self, bot: commands.Bot):
-        bot.bg_task = self.daily_message.start()
-        bot.update_info = self.update.start()
+        self.daily_message.start()
+        self.update.start()
         self.bot: commands.Bot = bot
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
@@ -29,32 +29,36 @@ class Daily(commands.Cog, name="daily"):
     async def update(self):
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
+        print(self.guilds)
 
     @tasks.loop(minutes=1)
     async def daily_message(self):
         print("checking...")
         for (key, value) in self.guilds.items():
-            guild_tz = pytz.timezone(value["tz"])
+            guild_tz = pytz.timezone(value["tz"]) if value["tz"] else None
             announcement_channel: discord.TextChannel = self.bot.get_channel(
                 value["channel"])
             tmp_guild: discord.Guild = self.bot.get_guild(
                 int(key))
-            ping_role: discord.Role = tmp_guild.get_role(value["role"])
+            if tmp_guild is not None:
+                ping_role: discord.Role = tmp_guild.get_role(value["role"])
             last_sent: datetime = dateparser.parse(value["time"])
 
             # If it has been sent, uncheck the thing
-            if value["sent"] == True and last_sent >= dateparser.parse("Today at 0:00"):
+            if last_sent >= dateparser.parse("Today at 0:00"):
                 value["sent"] = False
                 print("Not sent at {0}".format(datetime.now(pytz.timezone("America/Chicago"))))
 
             # If it is the time to send it and it hasn't been sent today, send it
-            elif datetime.now(guild_tz) == 0 and last_sent < dateparser.parse("Today at 0:00"):
-                tmp_msg: discord.Message = await announcement_channel.send(self.daily_holidays())
-                await tmp_msg.publish()
-                await announcement_channel.send(self.daily_quotes(ping_role))
+            elif datetime.now(guild_tz).hour >= 0 and last_sent < dateparser.parse("Today at 0:00"):
+                if announcement_channel is not None:
+                    tmp_msg: discord.Message = await announcement_channel.send(embed=self.daily_holidays())
+                    await tmp_msg.publish()
+                    await announcement_channel.send(self.daily_quotes(ping_role))
                 value["sent"] = True
-                value["time"] = str(datetime.now(self.tz))
+                value["time"] = str(datetime.now(guild_tz))
                 print("Sent at {0}".format(datetime.now(self.tz)))
+            self.info.update("guilds", self.guilds)
 
 
 
