@@ -5,6 +5,7 @@ from cogs.holidays import Holidays
 from cogs.quotes import QuotesCommands as Quotes
 import dateparser
 import discord
+import logging
 import pytz
 
 
@@ -15,7 +16,6 @@ class Daily(commands.Cog, name="daily"):
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
         self.tz = pytz.timezone("America/Chicago")
-        print(self.guilds)
 
     @commands.command(name="test_daily")
     async def _test_daily(self, ctx: commands.Context):
@@ -26,37 +26,37 @@ class Daily(commands.Cog, name="daily"):
                         embed=self.daily_holidays())
 
     def update(self):
-        print("Updating\n___________")
+        logging.info("Updating\n___________")
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
-        print(self.guilds)
+        logging.info(self.guilds)
 
     @tasks.loop(minutes=1)
     async def daily_message(self):
         await self.bot.wait_until_ready()
         self.update()
-        print("checking...")
+        logging.info("checking...")
         for (key, value) in self.guilds.items():
-            print(key)
+            logging.info(key)
             if self.bot.get_guild(int(key)):
-                print(self.bot.get_guild(int(key)).name)
+                logging.info(self.bot.get_guild(int(key)).name)
 
             guild_tz = pytz.timezone(value["tz"]) if value["tz"] else None
             last_sent: datetime = dateparser.parse(value["time"])
 
             tmp_guild = self.bot.get_guild(int(key))
             ping_role = tmp_guild.get_role(value["role"])
-            print("Last Sent for {0}: {1}".format(
+            logging.info("Last Sent for {0}: {1}".format(
                 tmp_guild.name, str(last_sent)))
 
             # If it has been sent, uncheck the thing
             if last_sent >= dateparser.parse("Today at 0:00" + value["time"][-6:]):
-                print("Not sent at {0}".format(
+                logging.info("Not sent at {0}".format(
                     datetime.now(pytz.timezone("America/Chicago"))))
 
             # If it is the time to send it and it hasn't been sent today, send it
             elif last_sent < dateparser.parse(
-                        "Today at 0:00" + value["time"][-6:]):
+                    "Today at 0:00" + value["time"][-6:]):
                 if announcement_channel := self.bot.get_channel(
                         value["channel"]):
                     tmp_msg = await announcement_channel.send(
@@ -66,7 +66,8 @@ class Daily(commands.Cog, name="daily"):
                         self.daily_quotes(ping_role))
                     value["sent"] = True
                     value["time"] = str(datetime.now(guild_tz))
-                    print("Sent at {0}".format(datetime.now(self.tz)))
+                    logging.info("Sent at {0}".format(
+                        datetime.now(self.tz)))
                 self.info.update("guilds", self.guilds)
 
     def daily_holidays(self):

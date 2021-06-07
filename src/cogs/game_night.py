@@ -1,4 +1,5 @@
 import discord
+import logging
 from discord.ext import commands
 from utilities import SuggestUtilities
 from database import DBClient
@@ -41,7 +42,7 @@ class GameNightCommands(commands.Cog, name="game night"):
     )
     async def choose_game(self, ctx, suggestionID: int, time: str = "7:00 PM", day: str = "Saturday"):
         if (not await self.bot.is_owner(ctx.message.author)):
-            print(ctx.message.author.id)
+            logging.info(ctx.message.author.id)
             await ctx.reply("No")
             return
 

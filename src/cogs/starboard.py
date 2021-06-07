@@ -49,11 +49,10 @@ class Starboard(commands.Cog, name="starboard"):
                     if message.jump_url in y.value:
                         return star_message
 
-    
+
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        print("In")
         self.guilds = self.starboard_info.find("guilds")
         guild_settings = self.guilds[str(payload.guild_id)]
 
@@ -71,7 +70,6 @@ class Starboard(commands.Cog, name="starboard"):
             star_thresh: int = thresh
 
         if len(starred) == star_thresh:
-            print("Good")
             await star_channel.send(embed=self.create_star_message(message, starred))
 
         if len(starred) > star_thresh:

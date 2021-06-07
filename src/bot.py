@@ -1,5 +1,6 @@
 import discord
 import os
+import logging
 
 from discord.ext import commands
 from keep_alive import keep_alive
@@ -37,6 +38,8 @@ class BotClient(commands.Bot):
     async def on_ready(self):  # When the bot is ready
         print("I'm in")
         print(self.user)  # Prints the bot's username and identifier
+
+logging.basicConfig(filename="logs.log", filemode="w", level=logging.INFO, format="%(asctime)s | %(levelname)s : %(filename)s : %(message)s")
 
 
 bot = BotClient()

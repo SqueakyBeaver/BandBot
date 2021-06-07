@@ -1,6 +1,7 @@
 import io
 import textwrap
 import traceback
+import logging
 from contextlib import redirect_stdout
 
 from discord.ext import commands
@@ -90,7 +91,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         content.replace("\'", "\\\'").replace("\"", "\\\"")
 
         if not content.startswith("```") or not content.endswith("```"):
-            print("Not good")
+            logging.warning("Not good")
             return {"blocks": False,
                     "res": f"You need code blocks. Try \n\`\`\`py\n{content}\n\`\`\`\n"}
 
@@ -130,7 +131,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         try:
             exec(to_compile, env)
         except Exception as e:
-            print(e)
+            logging.error(e)
             return await ctx.reply(f"```py\n{e.__class__.__name__}: {e}\n```")
 
         func = env["func"]

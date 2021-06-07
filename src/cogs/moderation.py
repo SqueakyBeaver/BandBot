@@ -3,6 +3,7 @@ from discord.ext import commands
 import asyncio
 from datetime import datetime
 import dateparser
+import logging
 
 
 class Checks():
@@ -40,7 +41,7 @@ class ModerationCommands(commands.Cog, name="moderation"):
     async def task(self, end, func_end, *args, **kwargs):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
-            print(end - datetime.now())
+            logging.info(end - datetime.now())
             if datetime.now() >= end:
                 return await func_end(*args, **kwargs)
             else:
