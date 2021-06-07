@@ -11,7 +11,6 @@ import pytz
 class Daily(commands.Cog, name="daily"):
     def __init__(self, bot: commands.Bot):
         self.daily_message.start()
-        self.update.start()
         self.bot = bot
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
@@ -26,9 +25,8 @@ class Daily(commands.Cog, name="daily"):
         await ctx.reply(content=self.daily_quotes(ping_role),
                         embed=self.daily_holidays())
 
-    @tasks.loop(minutes=1)
-    async def update(self):
-        await self.bot.wait_until_ready()
+    def update(self):
+        print("Updating\n___________")
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
         print(self.guilds)
@@ -36,6 +34,7 @@ class Daily(commands.Cog, name="daily"):
     @tasks.loop(minutes=1)
     async def daily_message(self):
         await self.bot.wait_until_ready()
+        self.update()
         print("checking...")
         for (key, value) in self.guilds.items():
             print(key)
@@ -52,13 +51,11 @@ class Daily(commands.Cog, name="daily"):
 
             # If it has been sent, uncheck the thing
             if last_sent >= dateparser.parse("Today at 0:00" + value["time"][-6:]):
-                value["sent"] = False
                 print("Not sent at {0}".format(
                     datetime.now(pytz.timezone("America/Chicago"))))
 
             # If it is the time to send it and it hasn't been sent today, send it
-            elif datetime.now(
-                    guild_tz).hour >= 0 and last_sent < dateparser.parse(
+            elif last_sent < dateparser.parse(
                         "Today at 0:00" + value["time"][-6:]):
                 if announcement_channel := self.bot.get_channel(
                         value["channel"]):
@@ -70,7 +67,7 @@ class Daily(commands.Cog, name="daily"):
                     value["sent"] = True
                     value["time"] = str(datetime.now(guild_tz))
                     print("Sent at {0}".format(datetime.now(self.tz)))
-                    self.info.update("guilds", self.guilds)
+                self.info.update("guilds", self.guilds)
 
     def daily_holidays(self):
         holidays: Holidays = Holidays(self.bot)
