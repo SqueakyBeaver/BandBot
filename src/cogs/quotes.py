@@ -8,13 +8,14 @@ import wikiquote
 import random
 
 
-class QuotesCommands(commands.Cog, name="quotes"):
+class Quotes(commands.Cog, name="quotes"):
     """ Commands for Quotes """
 
     def __init__(self, bot):
         self.bot: commands.Bot = bot
 
-    def get_quotes(self):
+    @staticmethod
+    def get_quotes():
         daily_quote = wikiquote.quote_of_the_day()
         return f"{daily_quote[0]}\n~{daily_quote[1]}"
 
@@ -103,8 +104,8 @@ class QuotesCommands(commands.Cog, name="quotes"):
                       description="Get the daily quote"
                       )
     async def _qotd(self, ctx):
-        return await ctx.reply(f'{ctx.author.mention}\n{self.get_quotes()[0]}')
+        return await ctx.reply(f'{ctx.author.mention}\n{Quotes.get_quotes()[0]}')
 
 
 def setup(bot):
-    bot.add_cog(QuotesCommands(bot))
+    bot.add_cog(Quotes(bot))

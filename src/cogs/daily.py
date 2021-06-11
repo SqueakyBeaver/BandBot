@@ -2,7 +2,7 @@ from discord.ext import commands, tasks
 from datetime import datetime
 from database import DBClient
 from cogs.holidays import Holidays
-from cogs.quotes import QuotesCommands as Quotes
+from cogs.quotes import Quotes
 import dateparser
 import discord
 import logging
@@ -19,10 +19,10 @@ class Daily(commands.Cog, name="daily"):
 
     @commands.command(name="test_daily")
     async def _test_daily(self, ctx: commands.Context):
-        for (key, value) in self.guilds.items():
-            ping_role: discord.Role = self.bot.get_guild(int(key)).get_role(
-                value["role"])
-        await ctx.reply(content=self.daily_quotes(ping_role),
+        time = datetime.now()
+        ping_role: discord.Role = self.bot.get_guild(ctx.guild.id).get_role(
+            self.guilds[str(ctx.guild.id)]["role"])
+        await ctx.reply(content=self.daily_quotes(ping_role) + str(datetime.now() - time),
                         embed=self.daily_holidays())
 
     def update(self):
@@ -42,7 +42,7 @@ class Daily(commands.Cog, name="daily"):
                 logging.info(self.bot.get_guild(int(key)).name)
 
             guild_tz = pytz.timezone(value["tz"]) if value["tz"] else None
-            last_sent: datetime = dateparser.parse(value["time"])
+            last_sent = dateparser.parse(value["time"])
 
             tmp_guild = self.bot.get_guild(int(key))
             ping_role = tmp_guild.get_role(value["role"])
@@ -69,16 +69,14 @@ class Daily(commands.Cog, name="daily"):
                     await tmp_msg.publish()
                     await announcement_channel.send(
                         self.daily_quotes(ping_role))
-                    
+
             logging.info("\n")
 
     def daily_holidays(self):
-        holidays: Holidays = Holidays(self.bot)
-        return holidays.get_holidays(dateparser.parse("today"))
+        return Holidays.get_holidays(dateparser.parse("today"))
 
     def daily_quotes(self, ping_role: discord.Role):
-        quotes: Quotes = Quotes(self.bot)
-        quote: str = quotes.get_quotes()
+        quote: str = Quotes.get_quotes()
 
         return ("{0}\n```\n{1}```".format(ping_role.mention, quote))
 

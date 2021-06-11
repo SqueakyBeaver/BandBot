@@ -15,7 +15,8 @@ class Holidays(commands.Cog, name="holiday"):
     def __init__(self, bot):
         self.bot = bot
 
-    def get_holidays(self, date):
+    @staticmethod
+    def get_holidays(date):
         link = f"https://www.checkiday.com/{date.month}/{date.day}/{date.year}"
 
         try:
@@ -25,8 +26,7 @@ class Holidays(commands.Cog, name="holiday"):
 
         soup = BeautifulSoup(site.content, "html.parser")
 
-        holidays = soup.find(id="masonryGrid")
-        links = holidays.find_all("a")
+        links = soup.find(id="masonryGrid").find_all("a")
 
         links_list: list[str] = []
         for i in links:
@@ -62,7 +62,7 @@ class Holidays(commands.Cog, name="holiday"):
     async def _holidays(self, ctx: commands.Context, *, day: str):
         date = dateparser.parse(day)
 
-        res = self.get_holidays(date)
+        res = Holidays.get_holidays(date)
 
         if res is None:
             return await ctx.reply(f"{ctx.author.mention} No results found :(")

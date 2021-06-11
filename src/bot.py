@@ -17,7 +17,7 @@ class BotClient(commands.Bot):
                          case_insensitive=True,  # Commands aren't case-sensitive
                          intents=intents,  # Discord has to be annoying
                          owner_id=557273716782923820,  # I own the bot
-                         activity=discord.Activity(type=discord.ActivityType.watching, name="All of You")
+                         activity=discord.Activity(type=discord.ActivityType.playing, name="A Kazoo") # He is playing a kazoo
                          )
         extensions = [
             "cogs.devs",  # Commands for devs only
@@ -32,7 +32,7 @@ class BotClient(commands.Bot):
             "cogs.daily" # Took me long enough, eh?
         ]
 
-        if __name__ == '__main__':  # Ensures this is the file being run
+        if __name__ == "__main__":  # Ensures this is the file being run
             for extension in extensions:
                 self.load_extension(extension)  # Loads every extension.
 
@@ -40,15 +40,8 @@ class BotClient(commands.Bot):
         print("I'm in")
         print(self.user)  # Prints the bot's username and identifier
 
-
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
-
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='logs.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
