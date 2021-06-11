@@ -11,6 +11,7 @@ token = os.environ.get("DISCORD_BOT_SECRET")
 
 class BotClient(commands.Bot):
     def __init__(self, *args, **kwargs):
+
         super().__init__(*args, **kwargs,
                          command_prefix="b!",  # Change to desired prefix
                          case_insensitive=True,  # Commands aren't case-sensitive
@@ -39,8 +40,18 @@ class BotClient(commands.Bot):
         print("I'm in")
         print(self.user)  # Prints the bot's username and identifier
 
-logging.basicConfig(filename="logs.log", filemode="w", level=logging.INFO, format="%(asctime)s | %(levelname)s : %(filename)s : %(message)s")
 
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='logs.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 bot = BotClient()
 keep_alive()  # Starts a webserver to be pinged.

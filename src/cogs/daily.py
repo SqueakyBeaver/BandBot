@@ -26,7 +26,7 @@ class Daily(commands.Cog, name="daily"):
                         embed=self.daily_holidays())
 
     def update(self):
-        logging.info("Updating\n___________")
+        logging.info("\n\nUpdating")
         self.info: DBClient = DBClient("daily")
         self.guilds: dict = self.info.find("guilds")
         logging.info(self.guilds)
@@ -54,9 +54,14 @@ class Daily(commands.Cog, name="daily"):
                 logging.info("Not sent at {0}".format(
                     datetime.now(pytz.timezone("America/Chicago"))))
 
-            # If it is the time to send it and it hasn't been sent today, send it
-            elif last_sent < dateparser.parse(
-                    "Today at 0:00" + value["time"][-6:]):
+            # Otherwise, send it
+            else:
+                value["sent"] = True
+                value["time"] = str(datetime.now(guild_tz))
+                logging.info("Sent at {0}".format(
+                    datetime.now(self.tz)))
+                self.info.update("guilds", self.guilds)
+
                 if announcement_channel := self.bot.get_channel(
                         value["channel"]):
                     tmp_msg = await announcement_channel.send(
@@ -64,11 +69,8 @@ class Daily(commands.Cog, name="daily"):
                     await tmp_msg.publish()
                     await announcement_channel.send(
                         self.daily_quotes(ping_role))
-                    value["sent"] = True
-                    value["time"] = str(datetime.now(guild_tz))
-                    logging.info("Sent at {0}".format(
-                        datetime.now(self.tz)))
-                self.info.update("guilds", self.guilds)
+                    
+            logging.info("\n")
 
     def daily_holidays(self):
         holidays: Holidays = Holidays(self.bot)
