@@ -1,5 +1,3 @@
-import pymongo
-import os
 import json
 
 
