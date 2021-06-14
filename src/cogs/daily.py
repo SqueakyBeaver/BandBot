@@ -47,28 +47,29 @@ class Daily(commands.Cog, name="daily"):
             tmp_guild = self.bot.get_guild(int(key))
             ping_role = tmp_guild.get_role(value["role"])
             logging.info("Last Sent for {0}: {1}".format(
-                tmp_guild.name, str(last_sent)))
+                tmp_guild.name, value["time"]))
 
-            # If it has been sent, uncheck the thing
-            if last_sent >= dateparser.parse("Today at 0:00" + value["time"][-6:]):
-                logging.info("Not sent at {0}".format(
-                    datetime.now(pytz.timezone("America/Chicago"))))
+            # If it has been sent today, uncheck the thing
+            if last_sent.day >= datetime.now(guild_tz).day:
+                logging.info("Not sent")
+                continue
 
             # Otherwise, send it
             else:
                 value["sent"] = True
-                value["time"] = str(datetime.now(guild_tz))
-                logging.info("Sent at {0}".format(
-                    datetime.now(self.tz)))
+                value["time"] = last_sent = str(datetime.now(guild_tz))
+                logging.info("Sent")
+                print("I AM BROKEN YOU DUMBASS")
+                self.guilds[key] = value
                 self.info.update("guilds", self.guilds)
 
-                if announcement_channel := self.bot.get_channel(
-                        value["channel"]):
-                    tmp_msg = await announcement_channel.send(
-                        embed=self.daily_holidays())
-                    await tmp_msg.publish()
-                    await announcement_channel.send(
-                        self.daily_quotes(ping_role))
+                # if announcement_channel := self.bot.get_channel(
+                #         value["channel"]):
+                #     tmp_msg = await announcement_channel.send(
+                #         embed=self.daily_holidays())
+                #     await tmp_msg.publish()
+                #     await announcement_channel.send(
+                #         self.daily_quotes(ping_role))
 
             logging.info("\n")
 
