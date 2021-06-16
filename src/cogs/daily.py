@@ -63,13 +63,13 @@ class Daily(commands.Cog, name="daily"):
                 self.guilds[key] = value
                 self.info.update("guilds", self.guilds)
 
-                # if announcement_channel := self.bot.get_channel(
-                #         value["channel"]):
-                #     tmp_msg = await announcement_channel.send(
-                #         embed=self.daily_holidays())
-                #     await tmp_msg.publish()
-                #     await announcement_channel.send(
-                #         self.daily_quotes(ping_role))
+                if announcement_channel := self.bot.get_channel(
+                        value["channel"]):
+                    tmp_msg = await announcement_channel.send(
+                        embed=self.daily_holidays())
+                    await tmp_msg.publish()
+                    await announcement_channel.send(
+                        self.daily_quotes(ping_role))
 
             logging.info("\n")
 

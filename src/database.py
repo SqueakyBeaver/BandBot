@@ -1,6 +1,5 @@
 import json
 
-
 class DBClient():
     def __init__(self, file_name: str):
         self.file_name = "backend/" + file_name + ".json"
