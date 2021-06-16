@@ -26,7 +26,7 @@ class Holidays(commands.Cog, name="holiday"):
 
         soup = BeautifulSoup(site.content, "html.parser")
 
-        links = soup.find(id="masonryGrid").find_all("a")
+        links = soup.find(id="magicGrid").find_all("a")
 
         links_list: list[str] = []
         for i in links:
