@@ -11,8 +11,10 @@ def get_holidays(day: str):
         site = requests.get(link)
         soup = BeautifulSoup(site.content, "html.parser")
 
-        holidays = soup.find(id = "masonryGrid")
+        holidays = soup.find(id = "magicGrid")
+        print("Holidays: "+str(holidays))
         links = holidays.find_all("a")
+        print("Links: "+str(links))
 
         cnt = 0
         links_list: list[str] = []
