@@ -1,10 +1,13 @@
 import discord
 import os
 import logging
+import pytz
 
+from datetime import datetime
 from discord.ext import commands
 from keep_alive import keep_alive
 
+print(datetime.now(pytz.timezone("America/Chicago")))
 intents = discord.Intents.all()
 token = os.environ.get("DISCORD_BOT_SECRET")
 

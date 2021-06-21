@@ -66,15 +66,15 @@ class Daily(commands.Cog, name="daily"):
                 if announcement_channel := self.bot.get_channel(
                         value["channel"]):
                     tmp_msg = await announcement_channel.send(
-                        embed=self.daily_holidays())
+                        embed=self.daily_holidays(guild_tz))
                     await tmp_msg.publish()
                     await announcement_channel.send(
                         self.daily_quotes(ping_role))
 
             logging.info("\n")
 
-    def daily_holidays(self):
-        return Holidays.get_holidays(dateparser.parse("today"))
+    def daily_holidays(self, tz):
+        return Holidays.get_holidays(datetime.now(tz))
 
     def daily_quotes(self, ping_role: discord.Role):
         quote: str = Quotes.get_quotes()
