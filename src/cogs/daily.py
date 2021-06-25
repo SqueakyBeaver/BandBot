@@ -46,13 +46,12 @@ class Daily(commands.Cog, name="daily"):
 
             tmp_guild = self.bot.get_guild(int(key))
             ping_role = tmp_guild.get_role(value["role"])
-            logging.info("Last Sent for {0}: {1}".format(
-                tmp_guild.name, value["time"]))
+            logging.info("Sent for {0} already: {1}".format(
+                tmp_guild.name, value["sent"]))
 
             if datetime.now(guild_tz).hour == 0 and not sent:
                 value["sent"] = True
                 logging.info("Sent")
-                print("I AM BROKEN YOU DUMBASS")
                 self.guilds[key] = value
                 self.info.update("guilds", self.guilds)
 
@@ -65,6 +64,7 @@ class Daily(commands.Cog, name="daily"):
                         self.daily_quotes(ping_role))
 
             elif datetime.now(guild_tz).hour > 0:
+                logging.info("not sent")
                 value["sent"] = False
 
             logging.info("\n")
