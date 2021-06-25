@@ -42,22 +42,15 @@ class Daily(commands.Cog, name="daily"):
                 logging.info(self.bot.get_guild(int(key)).name)
 
             guild_tz = pytz.timezone(value["tz"]) if value["tz"] else None
-            last_sent = dateparser.parse(value["time"])
+            sent = value["sent"]
 
             tmp_guild = self.bot.get_guild(int(key))
             ping_role = tmp_guild.get_role(value["role"])
             logging.info("Last Sent for {0}: {1}".format(
                 tmp_guild.name, value["time"]))
 
-            # If it has been sent today, uncheck the thing
-            if last_sent.day >= datetime.now(guild_tz).day:
-                logging.info("Not sent")
-                continue
-
-            # Otherwise, send it
-            else:
+            if datetime.now(guild_tz).hour == 0 and not sent:
                 value["sent"] = True
-                value["time"] = last_sent = str(datetime.now(guild_tz))
                 logging.info("Sent")
                 print("I AM BROKEN YOU DUMBASS")
                 self.guilds[key] = value
@@ -70,6 +63,9 @@ class Daily(commands.Cog, name="daily"):
                     await tmp_msg.publish()
                     await announcement_channel.send(
                         self.daily_quotes(ping_role))
+
+            elif datetime.now(guild_tz).hour > 0:
+                value["sent"] = False
 
             logging.info("\n")
 
