@@ -102,7 +102,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True, name="eval")
-    async def _eval(self, ctx, *, body: str):
+    async def _eval(self, ctx,  body: str):
         """Evaluates code"""
 
         env = {
