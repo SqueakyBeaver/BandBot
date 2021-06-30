@@ -52,8 +52,6 @@ class Daily(commands.Cog, name="daily"):
             if datetime.now(guild_tz).hour == 0 and not sent:
                 value["sent"] = True
                 logging.info("Sent")
-                self.guilds[key] = value
-                self.info.update("guilds", self.guilds)
 
                 if announcement_channel := self.bot.get_channel(
                         value["channel"]):
@@ -66,6 +64,9 @@ class Daily(commands.Cog, name="daily"):
             elif datetime.now(guild_tz).hour > 0:
                 logging.info("not sent")
                 value["sent"] = False
+
+            self.guilds[key] = value
+            self.info.update("guilds", self.guilds)
 
             logging.info("\n")
 

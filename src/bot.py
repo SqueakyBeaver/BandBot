@@ -32,7 +32,8 @@ class BotClient(commands.Bot):
             "cogs.holidays",  # Holiday-related commands
             "cogs.starboard", # Starboard commands
             "cogs.config", # Finally, some config
-            "cogs.daily" # Took me long enough, eh?
+            "cogs.daily", # Took me long enough, eh?
+            "cogs.misc" # Yes
         ]
 
         if __name__ == "__main__":  # Ensures this is the file being run
