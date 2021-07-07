@@ -31,8 +31,8 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         extensions = self.bot.extensions
         if cog == "all":  # Lets you reload all cogs at once
             for extension in extensions:
-                self.bot.unload_extension(cog)
-                self.bot.load_extension(cog)
+                self.bot.unload_extension(extension)
+                self.bot.load_extension(extension)
             await ctx.reply("Done")
         if cog in extensions:
             self.bot.unload_extension(cog)  # Unloads the cog
