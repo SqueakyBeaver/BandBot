@@ -8,20 +8,19 @@ from discord.ext import commands
 
 
 class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True)):
-    """ Developer commands """
+    """Developer commands"""
 
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
 
     async def cog_check(self, ctx):
-        if (not await ctx.bot.is_owner(ctx.author)):
+        if not await ctx.bot.is_owner(ctx.author):
             raise commands.NotOwner("Nice try pal, but no")
         return True
 
     @commands.command(  # Decorator to declare where a command is.
-        name="reload",  # Name of the command, defaults to function name.
-        aliases=["rl"]
+        name="reload", aliases=["rl"]  # Name of the command, defaults to function name.
     )
     async def reload(self, ctx, cog):
         """
@@ -41,10 +40,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         else:
             await ctx.reply("Unknown Cog")  # If the cog isn't found/loaded.
 
-    @commands.command(
-        name="unload",
-        aliases=["ul"]
-    )
+    @commands.command(name="unload", aliases=["ul"])
     async def unload(self, ctx, cog):
         """
         Unload a cog.
@@ -56,9 +52,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         self.bot.unload_extension(cog)
         await ctx.reply("`{cog}` has successfully been unloaded.")
 
-    @commands.command(
-        name="load"
-    )
+    @commands.command(name="load")
     async def load(self, ctx, cog):
         """
         Loads a cog.
@@ -71,10 +65,7 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         except commands.errors.ExtensionNotFound:
             await ctx.reply(f"`{cog}` does not exist!")
 
-    @commands.command(
-        name="listcogs",
-        aliases=["lc"]
-    )
+    @commands.command(name="listcogs", aliases=["lc"])
     async def listcogs(self, ctx):
         """
         Returns a list of all enabled commands.
@@ -86,24 +77,20 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
         await ctx.reply(base_string)
 
     def cleanup_code(self, content):
-        """Cleanup for code block inputs"""
+        """Automatically removes code blocks from the code."""
+        # remove ```py\n```
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
 
-        content.replace("\'", "\\\'").replace("\"", "\\\"")
-
-        if not content.startswith("```") or not content.endswith("```"):
-            logging.warning("Not good")
-            return {"blocks": False,
-                    "res": f"You need code blocks. Try \n\`\`\`py\n{content}\n\`\`\`\n"}
-
-        content = content.replace("```", "\n```").strip()
-        if content.startswith("```py\n"):
-            return {"blocks": True,
-                    "res": "\n".join(content.split("\n")[1:-1])}
+        # remove `foo`
+        return content.strip("` \n")
 
     @commands.check(commands.is_owner())
     @commands.command(hidden=True, name="eval")
-    async def _eval(self, ctx,  body: str):
+    async def eval(self, ctx, *, body: str):
         """Evaluates code"""
+        if ctx.message.author.id not in self.file["permitted"]:
+            return await ctx.send("You do not have authorization to use this command")
 
         env = {
             "bot": self.bot,
@@ -112,27 +99,20 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
             "author": ctx.author,
             "guild": ctx.guild,
             "message": ctx.message,
-            "_": self._last_result
+            "_": self._last_result,
         }
 
         env.update(globals())
 
-        cleaned = self.cleanup_code(body)
-
-        if not cleaned["blocks"]:
-            return await ctx.reply(cleaned["res"])
-
-        body = cleaned["res"]
-
+        body = self.cleanup_code(body)
         stdout = io.StringIO()
 
-        to_compile = f"async def func():\n{textwrap.indent(body, '    ')}"
+        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
         try:
             exec(to_compile, env)
         except Exception as e:
-            logging.error(e)
-            return await ctx.reply(f"```py\n{e.__class__.__name__}: {e}\n```")
+            return await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
 
         func = env["func"]
         try:
@@ -140,14 +120,20 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            await ctx.reply(f"```py\n{value}{traceback.format_exc()}\n```")
+            await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
             value = stdout.getvalue()
+            try:
+                await ctx.message.add_reaction("\u2705")
+            except:
+                pass
 
-            await ctx.message.add_reaction("\u2705")
-
-            if value:
-                await ctx.reply(f"```py\n{value}\n```")
+            if ret is None:
+                if value:
+                    await ctx.send(f"```py\n{value}\n```")
+            else:
+                self._last_result = ret
+                await ctx.send(f"```py\n{value}{ret}\n```")
 
 
 def setup(bot):
