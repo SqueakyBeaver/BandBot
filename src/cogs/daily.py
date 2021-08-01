@@ -58,8 +58,11 @@ class Daily(commands.Cog, name="daily"):
                     tmp_msg = await announcement_channel.send(
                         embed=self.daily_holidays(guild_tz))
                     await tmp_msg.publish()
-                    await announcement_channel.send(
+                    await tmp_msg.start_thread("Holiday Discussion")
+                    await tmp_msg  = announcement_channel.send(
                         self.daily_quotes(ping_role))
+                    await tmp_msg.start_thread("QOTD Discussion")
+
 
             elif datetime.now(guild_tz).hour > 0:
                 logging.info("not sent")

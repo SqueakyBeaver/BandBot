@@ -89,8 +89,6 @@ class DevCommands(commands.Cog, name="developer", command_attrs=dict(hidden=True
     @commands.command(hidden=True, name="eval")
     async def eval(self, ctx, *, body: str):
         """Evaluates code"""
-        if ctx.message.author.id not in self.file["permitted"]:
-            return await ctx.send("You do not have authorization to use this command")
 
         env = {
             "bot": self.bot,
