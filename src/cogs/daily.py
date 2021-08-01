@@ -59,7 +59,7 @@ class Daily(commands.Cog, name="daily"):
                         embed=self.daily_holidays(guild_tz))
                     await tmp_msg.publish()
                     await tmp_msg.start_thread("Holiday Discussion")
-                    await tmp_msg  = announcement_channel.send(
+                    tmp_msg = await announcement_channel.send(
                         self.daily_quotes(ping_role))
                     await tmp_msg.start_thread("QOTD Discussion")
 
