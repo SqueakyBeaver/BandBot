@@ -58,10 +58,10 @@ class Daily(commands.Cog, name="daily"):
                     tmp_msg = await announcement_channel.send(
                         embed=self.daily_holidays(guild_tz))
                     await tmp_msg.publish()
-                    await tmp_msg.start_thread(name="Holiday Discussion")
+                    await tmp_msg.create_thread(name="Holiday Discussion")
                     tmp_msg = await announcement_channel.send(
                         self.daily_quotes(ping_role))
-                    await tmp_msg.start_thread(name="QOTD Discussion")
+                    await tmp_msg.create_thread(name="QOTD Discussion")
 
 
             elif datetime.now(guild_tz).hour > 0:
